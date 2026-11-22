@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Activity, ShieldCheck, RefreshCw, UserCheck, ChevronDown } from 'lucide-react';
+import { Activity, ShieldCheck, RefreshCw, ChevronDown, User } from 'lucide-react';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 
@@ -25,61 +25,79 @@ export default function Navbar() {
 
   return (
     <header className="app-navbar">
-      <div className="navbar-status">
+      {/* Estado del API Gateway */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.85rem' }}>
         <span 
-          className="status-indicator" 
           style={{ 
-            backgroundColor: gatewayStatus === 'online' ? '#16a34a' : (gatewayStatus === 'degraded' ? '#ca8a04' : '#dc2626') 
+            display: 'inline-block',
+            width: 9,
+            height: 9,
+            borderRadius: '50%',
+            backgroundColor: gatewayStatus === 'online' ? '#43C59E' : (gatewayStatus === 'degraded' ? '#DD6B20' : '#E53E3E'),
+            boxShadow: gatewayStatus === 'online' ? '0 0 0 3px rgba(67, 197, 158, 0.2)' : 'none'
           }}
         />
-        <span style={{ fontWeight: 500, fontSize: '0.85rem' }}>
-          Gateway: {gatewayStatus === 'online' ? 'Operativo (3000)' : (gatewayStatus === 'degraded' ? 'Degradado' : 'Sin conexión')}
+        <span style={{ fontWeight: 600, color: '#0A0908' }}>
+          Gateway: {gatewayStatus === 'online' ? 'Activo (3000)' : (gatewayStatus === 'degraded' ? 'Degradado' : 'Sin conexión')}
         </span>
         <button 
           onClick={checkStatus} 
-          title="Verificar conexión"
-          style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', color: '#64748b' }}
+          title="Verificar conexión del API Gateway"
+          style={{ 
+            background: 'none', 
+            border: 'none', 
+            cursor: 'pointer', 
+            display: 'flex', 
+            color: '#6A8EAE',
+            padding: 4,
+            borderRadius: 4
+          }}
         >
-          <RefreshCw size={14} />
+          <RefreshCw size={13} />
         </button>
       </div>
 
+      {/* Selector de Usuario Activo (5 Roles) */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', position: 'relative' }}>
-        {/* Selector de Usuario Activo (5 Roles) */}
         <div style={{ position: 'relative' }}>
           <button
             onClick={() => setShowUserMenu(!showUserMenu)}
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '0.6rem',
-              background: '#f8fafc',
-              border: '1px solid var(--border)',
+              gap: '0.65rem',
+              backgroundColor: '#FFFFFF',
+              border: '1px solid #d2dee9',
               borderRadius: '8px',
-              padding: '0.4rem 0.75rem',
+              padding: '0.45rem 0.85rem',
               cursor: 'pointer',
-              fontSize: '0.85rem'
+              boxShadow: 'var(--shadow-subtle)'
             }}
           >
             <div style={{
               width: 28,
               height: 28,
-              borderRadius: '50%',
-              backgroundColor: '#1e3a8a',
-              color: '#ffffff',
+              borderRadius: '6px',
+              backgroundColor: '#0A0908',
+              color: '#FFFFFF',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontWeight: 600,
-              fontSize: '0.75rem'
+              fontWeight: 700,
+              fontSize: '0.75rem',
+              letterSpacing: '0.04em'
             }}>
-              {user?.rol || 'US'}
+              {user?.rol || 'OP'}
             </div>
             <div style={{ textAlign: 'left' }}>
-              <div style={{ fontWeight: 600, color: 'var(--text-main)', lineHeight: 1.2 }}>{user?.nombre || 'Usuario'}</div>
-              <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Rol: {user?.rolNombre || user?.rol}</div>
+              <div style={{ fontWeight: 600, color: '#0A0908', fontSize: '0.85rem', lineHeight: 1.2 }}>
+                {user?.nombre || 'Usuario'}
+              </div>
+              <div style={{ fontSize: '0.7rem', color: '#6A8EAE', fontWeight: 500 }}>
+                {user?.rolNombre || user?.rol}
+              </div>
             </div>
-            <ChevronDown size={14} color="#64748b" />
+            <ChevronDown size={14} color="#6A8EAE" />
           </button>
 
           {showUserMenu && (
@@ -88,16 +106,24 @@ export default function Navbar() {
               top: '100%',
               right: 0,
               marginTop: '0.5rem',
-              width: 260,
-              backgroundColor: '#ffffff',
+              width: 270,
+              backgroundColor: '#FFFFFF',
               borderRadius: '8px',
-              boxShadow: 'var(--shadow-lg)',
-              border: '1px solid var(--border)',
+              boxShadow: 'var(--shadow-overlay)',
+              border: '1px solid #d2dee9',
               zIndex: 100,
               padding: '0.5rem 0'
             }}>
-              <div style={{ padding: '0.4rem 0.85rem', fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', borderBottom: '1px solid #f1f5f9' }}>
-                CAMBIAR ROL / USUARIO (HU SEED)
+              <div style={{ 
+                padding: '0.4rem 0.85rem', 
+                fontSize: '0.7rem', 
+                fontWeight: 700, 
+                color: '#6A8EAE', 
+                letterSpacing: '0.06em', 
+                textTransform: 'uppercase',
+                borderBottom: '1px solid #f0f4f8' 
+              }}>
+                Seleccionar Usuario (5 Roles)
               </div>
               {availableUsers.map(u => (
                 <button
@@ -108,30 +134,31 @@ export default function Navbar() {
                   }}
                   style={{
                     width: '100%',
-                    padding: '0.6rem 0.85rem',
+                    padding: '0.65rem 0.85rem',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '0.6rem',
-                    background: user?.id === u.id ? '#eff6ff' : 'transparent',
+                    gap: '0.65rem',
+                    backgroundColor: user?.id === u.id ? '#e8f9f3' : 'transparent',
                     border: 'none',
                     textAlign: 'left',
                     cursor: 'pointer',
-                    fontSize: '0.825rem'
+                    fontSize: '0.825rem',
+                    transition: 'background-color 0.1s ease'
                   }}
                 >
                   <span style={{
-                    padding: '2px 6px',
+                    padding: '2px 7px',
                     borderRadius: 4,
                     fontSize: '0.7rem',
-                    fontWeight: 700,
-                    backgroundColor: '#e2e8f0',
-                    color: '#1e293b'
+                    fontWeight: 800,
+                    backgroundColor: user?.id === u.id ? '#43C59E' : '#0A0908',
+                    color: user?.id === u.id ? '#0A0908' : '#FFFFFF'
                   }}>
                     {u.rol}
                   </span>
                   <div>
-                    <div style={{ fontWeight: 500 }}>{u.nombre}</div>
-                    <div style={{ fontSize: '0.7rem', color: '#64748b' }}>{u.rolNombre}</div>
+                    <div style={{ fontWeight: 600, color: '#0A0908' }}>{u.nombre}</div>
+                    <div style={{ fontSize: '0.72rem', color: '#6A8EAE' }}>{u.rolNombre}</div>
                   </div>
                 </button>
               ))}
@@ -139,9 +166,9 @@ export default function Navbar() {
           )}
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.825rem', color: '#475569' }}>
-          <ShieldCheck size={16} color="#0f766e" />
-          <span>PostgreSQL 16 Docker</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.825rem', color: '#6A8EAE' }}>
+          <ShieldCheck size={16} color="#43C59E" />
+          <span style={{ fontWeight: 500 }}>PostgreSQL 16</span>
         </div>
       </div>
     </header>

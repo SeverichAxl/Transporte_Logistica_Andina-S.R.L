@@ -8,15 +8,14 @@ import {
   Search, 
   Filter, 
   Clock, 
-  MapPin, 
-  User, 
   ArrowRight, 
-  CheckCircle, 
+  CheckCircle2, 
   AlertCircle,
   X,
   RefreshCw,
   FileText,
-  Edit2
+  MapPin,
+  Scale
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -127,7 +126,6 @@ export default function EnviosPage() {
 
   const abrirCambioEstado = (envio) => {
     setSelectedEnvio(envio);
-    // Sugerir la siguiente transición lógica
     if (envio.estado_codigo === 'REGISTRADO') setTargetEstado('PENDIENTE');
     else if (envio.estado_codigo === 'PENDIENTE') setTargetEstado('EN_TRANSITO');
     else if (envio.estado_codigo === 'EN_TRANSITO') setTargetEstado('ENTREGADO');
@@ -152,24 +150,26 @@ export default function EnviosPage() {
         }
       />
 
-      {/* Alertas de Notificación */}
+      {/* Alertas */}
       {successMsg && (
         <div style={{
-          backgroundColor: '#f0fdf4',
-          border: '1px solid #bbf7d0',
-          color: '#166534',
+          backgroundColor: 'var(--c-mint-light)',
+          border: '1px solid var(--c-mint-border)',
+          color: 'var(--c-mint-dark)',
           padding: '0.85rem 1.25rem',
-          borderRadius: 8,
+          borderRadius: 'var(--radius-md)',
           marginBottom: '1.25rem',
           display: 'flex',
           justifyContent: 'space-between',
-          alignItems: 'center'
+          alignItems: 'center',
+          fontWeight: 500,
+          fontSize: '0.875rem'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <CheckCircle size={18} />
+            <CheckCircle2 size={18} color="var(--c-mint-dark)" />
             <span>{successMsg}</span>
           </div>
-          <button onClick={() => setSuccessMsg('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#166534' }}>
+          <button onClick={() => setSuccessMsg('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--c-mint-dark)' }}>
             <X size={16} />
           </button>
         </div>
@@ -177,28 +177,30 @@ export default function EnviosPage() {
 
       {errorMsg && (
         <div style={{
-          backgroundColor: '#fef2f2',
-          border: '1px solid #fecaca',
-          color: '#991b1b',
+          backgroundColor: 'var(--c-danger-bg)',
+          border: '1px solid var(--c-danger-border)',
+          color: 'var(--c-danger)',
           padding: '0.85rem 1.25rem',
-          borderRadius: 8,
+          borderRadius: 'var(--radius-md)',
           marginBottom: '1.25rem',
           display: 'flex',
           justifyContent: 'space-between',
-          alignItems: 'center'
+          alignItems: 'center',
+          fontWeight: 500,
+          fontSize: '0.875rem'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <AlertCircle size={18} />
             <span>{errorMsg}</span>
           </div>
-          <button onClick={() => setErrorMsg('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#991b1b' }}>
+          <button onClick={() => setErrorMsg('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--c-danger)' }}>
             <X size={16} />
           </button>
         </div>
       )}
 
-      {/* Barra de Filtros y Búsqueda (FE-ENV-02) */}
-      <div className="card" style={{ marginBottom: '1.5rem' }}>
+      {/* Barra de Filtros (FE-ENV-02) */}
+      <div className="card" style={{ marginBottom: '1.5rem', padding: '1rem 1.25rem' }}>
         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
           <div style={{ position: 'relative', flex: 1, minWidth: 260 }}>
             <input
@@ -206,29 +208,24 @@ export default function EnviosPage() {
               value={searchCodigo}
               onChange={(e) => setSearchCodigo(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && cargarEnvios()}
-              placeholder="Buscar por código (ej: TLA-2026-000001) o pulsar Enter..."
+              placeholder="Buscar por código (ej: TLA-2026-000001) o presionar Enter..."
               style={{
                 width: '100%',
-                padding: '0.6rem 0.75rem 0.6rem 2.25rem',
-                borderRadius: 6,
-                border: '1px solid var(--border)',
+                padding: '0.65rem 0.75rem 0.65rem 2.25rem',
                 fontSize: '0.875rem'
               }}
             />
-            <Search size={16} style={{ position: 'absolute', left: 10, top: 12, color: '#94a3b8' }} />
+            <Search size={16} style={{ position: 'absolute', left: 10, top: 13, color: 'var(--c-slate)' }} />
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Filter size={16} color="#64748b" />
+            <Filter size={16} color="var(--c-slate)" />
             <select
               value={filterEstado}
               onChange={(e) => setFilterEstado(e.target.value)}
               style={{
-                padding: '0.6rem 0.75rem',
-                borderRadius: 6,
-                border: '1px solid var(--border)',
-                fontSize: '0.875rem',
-                backgroundColor: '#ffffff'
+                padding: '0.65rem 0.85rem',
+                fontSize: '0.875rem'
               }}
             >
               <option value="">Todos los Estados</option>
@@ -241,84 +238,84 @@ export default function EnviosPage() {
           </div>
 
           <button className="btn btn-outline" onClick={cargarEnvios}>
-            <RefreshCw size={14} />
+            <RefreshCw size={14} color="var(--c-slate-dark)" />
             <span>Actualizar</span>
           </button>
         </div>
       </div>
 
-      {/* Tabla de Listado de Envíos */}
+      {/* Tabla de Envíos */}
       <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem' }}>
+        <div className="table-container">
+          <table>
             <thead>
-              <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid var(--border)', color: '#475569' }}>
-                <th style={{ padding: '0.9rem 1.25rem', fontWeight: 600 }}>Código</th>
-                <th style={{ padding: '0.9rem 1rem', fontWeight: 600 }}>Ruta (Origen → Destino)</th>
-                <th style={{ padding: '0.9rem 1rem', fontWeight: 600 }}>Remitente / Destinatario</th>
-                <th style={{ padding: '0.9rem 1rem', fontWeight: 600 }}>Carga</th>
-                <th style={{ padding: '0.9rem 1rem', fontWeight: 600 }}>Estado</th>
-                <th style={{ padding: '0.9rem 1.25rem', fontWeight: 600, textAlign: 'right' }}>Acciones</th>
+              <tr>
+                <th>Código de Seguimiento</th>
+                <th>Ruta (Origen → Destino)</th>
+                <th>Remitente / Destinatario</th>
+                <th>Carga</th>
+                <th>Estado</th>
+                <th style={{ textAlign: 'right' }}>Acciones</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="6" style={{ padding: '2rem', textAlign: 'center', color: '#64748b' }}>
+                  <td colSpan="6" style={{ padding: '2.5rem', textAlign: 'center', color: 'var(--c-text-muted)' }}>
                     Cargando envíos...
                   </td>
                 </tr>
               ) : envios.length === 0 ? (
                 <tr>
-                  <td colSpan="6" style={{ padding: '3rem 1.5rem', textAlign: 'center' }}>
-                    <Package size={36} color="#94a3b8" style={{ marginBottom: '0.5rem' }} />
-                    <div style={{ fontWeight: 600, color: 'var(--text-main)' }}>No se encontraron envíos</div>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                      Intente cambiar los filtros o registre un nuevo envío en el botón superior.
+                  <td colSpan="6" style={{ padding: '3.5rem 1.5rem', textAlign: 'center' }}>
+                    <Package size={40} color="var(--c-slate)" style={{ marginBottom: '0.5rem' }} />
+                    <div style={{ fontWeight: 700, color: 'var(--c-dark)' }}>No se encontraron envíos</div>
+                    <div style={{ fontSize: '0.825rem', color: 'var(--c-text-secondary)', marginTop: '0.25rem' }}>
+                      Pruebe ajustando los filtros o registre un nuevo envío.
                     </div>
                   </td>
                 </tr>
               ) : (
                 envios.map((env) => (
-                  <tr key={env.id_envio} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                    <td style={{ padding: '0.9rem 1.25rem', fontWeight: 700, color: '#1e3a8a' }}>
+                  <tr key={env.id_envio}>
+                    <td style={{ fontWeight: 700, color: 'var(--c-dark)', letterSpacing: '0.02em' }}>
                       {env.codigo_seguimiento}
                     </td>
-                    <td style={{ padding: '0.9rem 1rem' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 500 }}>
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, color: 'var(--c-dark)' }}>
                         <span>{env.origen_ciudad}</span>
-                        <ArrowRight size={14} color="#94a3b8" />
+                        <ArrowRight size={13} color="var(--c-slate)" />
                         <span>{env.destino_ciudad}</span>
                       </div>
-                      <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{env.destino_direccion}</div>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--c-text-secondary)', marginTop: 2 }}>{env.destino_direccion}</div>
                     </td>
-                    <td style={{ padding: '0.9rem 1rem' }}>
-                      <div style={{ fontSize: '0.8rem' }}><strong>De:</strong> {env.remitente_nombre || 'N/A'}</div>
-                      <div style={{ fontSize: '0.8rem', color: '#475569' }}><strong>Para:</strong> {env.destinatario_nombre || 'N/A'}</div>
+                    <td>
+                      <div style={{ fontSize: '0.825rem', color: 'var(--c-dark)' }}><strong>De:</strong> {env.remitente_nombre || 'N/A'}</div>
+                      <div style={{ fontSize: '0.825rem', color: 'var(--c-text-secondary)', marginTop: 1 }}><strong>Para:</strong> {env.destinatario_nombre || 'N/A'}</div>
                     </td>
-                    <td style={{ padding: '0.9rem 1rem' }}>
-                      <div style={{ fontWeight: 600 }}>{env.peso_kg} kg</div>
-                      <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{env.descripcion_carga}</div>
+                    <td>
+                      <div style={{ fontWeight: 600, color: 'var(--c-dark)' }}>{env.peso_kg} kg</div>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--c-text-muted)' }}>{env.descripcion_carga}</div>
                     </td>
-                    <td style={{ padding: '0.9rem 1rem' }}>
+                    <td>
                       <StatusBadge status={env.estado_codigo} />
                     </td>
-                    <td style={{ padding: '0.9rem 1.25rem', textAlign: 'right' }}>
-                      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.4rem' }}>
+                    <td style={{ textAlign: 'right' }}>
+                      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.45rem' }}>
                         <button
                           onClick={() => verDetalle(env)}
                           className="btn btn-outline"
-                          style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem' }}
+                          style={{ padding: '0.35rem 0.7rem', fontSize: '0.775rem' }}
                           title="Ver detalle y trazabilidad"
                         >
-                          <FileText size={14} />
+                          <FileText size={13} color="var(--c-slate-dark)" />
                           <span>Trazabilidad</span>
                         </button>
                         {['REGISTRADO', 'PENDIENTE', 'EN_TRANSITO'].includes(env.estado_codigo) && (
                           <button
                             onClick={() => abrirCambioEstado(env)}
-                            className="btn btn-primary"
-                            style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem' }}
+                            className="btn btn-dark"
+                            style={{ padding: '0.35rem 0.7rem', fontSize: '0.775rem' }}
                             title="Cambiar estado"
                           >
                             <span>Cambiar Estado</span>
@@ -336,32 +333,32 @@ export default function EnviosPage() {
 
       {/* MODAL 1: REGISTRAR NUEVO ENVÍO (FE-ENV-01) */}
       {showCreateModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-          padding: '1.5rem'
-        }}>
-          <div style={{
-            backgroundColor: '#ffffff',
-            borderRadius: 12,
-            width: '100%',
-            maxWidth: 680,
-            maxHeight: '90vh',
-            overflowY: 'auto',
-            padding: '1.75rem',
-            boxShadow: 'var(--shadow-lg)'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid var(--border)', paddingBottom: '0.75rem' }}>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Package size={20} color="#2563eb" />
-                Registrar Nuevo Envío (HU-ENV-01)
-              </h3>
-              <button onClick={() => setShowCreateModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+        <div className="modal-backdrop">
+          <div className="modal-content" style={{ maxWidth: 680 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid var(--c-slate-border)', paddingBottom: '0.75rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                <div style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 'var(--radius-sm)',
+                  backgroundColor: 'var(--c-mint-light)',
+                  color: 'var(--c-mint-dark)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  <Package size={18} />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--c-dark)' }}>
+                    Registrar Nuevo Envío
+                  </h3>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--c-text-secondary)' }}>
+                    Código único y estado REGISTRADO asignados automáticamente
+                  </div>
+                </div>
+              </div>
+              <button onClick={() => setShowCreateModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--c-slate)' }}>
                 <X size={20} />
               </button>
             </div>
@@ -369,7 +366,9 @@ export default function EnviosPage() {
             <form onSubmit={handleCrearEnvio}>
               {/* Sección Remitente */}
               <div style={{ marginBottom: '1.25rem' }}>
-                <h4 style={{ fontSize: '0.9rem', fontWeight: 600, color: '#1e3a8a', marginBottom: '0.5rem' }}>1. Datos del Remitente</h4>
+                <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--c-slate-dark)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.5rem' }}>
+                  1. Remitente
+                </h4>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '0.75rem', marginBottom: '0.5rem' }}>
                   <input
                     type="text"
@@ -377,15 +376,15 @@ export default function EnviosPage() {
                     placeholder="Documento (CI/NIT)"
                     value={formData.remitente.nroDocumento}
                     onChange={(e) => setFormData({ ...formData, remitente: { ...formData.remitente, nroDocumento: e.target.value } })}
-                    style={{ padding: '0.5rem', borderRadius: 6, border: '1px solid var(--border)', fontSize: '0.85rem' }}
+                    style={{ padding: '0.55rem', fontSize: '0.85rem' }}
                   />
                   <input
                     type="text"
                     required
-                    placeholder="Nombre Completo o Empresa"
+                    placeholder="Nombre Completo o Razón Social"
                     value={formData.remitente.nombreCompleto}
                     onChange={(e) => setFormData({ ...formData, remitente: { ...formData.remitente, nombreCompleto: e.target.value } })}
-                    style={{ padding: '0.5rem', borderRadius: 6, border: '1px solid var(--border)', fontSize: '0.85rem' }}
+                    style={{ padding: '0.55rem', fontSize: '0.85rem' }}
                   />
                 </div>
                 <input
@@ -393,13 +392,15 @@ export default function EnviosPage() {
                   placeholder="Teléfono de contacto"
                   value={formData.remitente.telefono}
                   onChange={(e) => setFormData({ ...formData, remitente: { ...formData.remitente, telefono: e.target.value } })}
-                  style={{ width: '100%', padding: '0.5rem', borderRadius: 6, border: '1px solid var(--border)', fontSize: '0.85rem' }}
+                  style={{ width: '100%', padding: '0.55rem', fontSize: '0.85rem' }}
                 />
               </div>
 
               {/* Sección Destinatario */}
               <div style={{ marginBottom: '1.25rem' }}>
-                <h4 style={{ fontSize: '0.9rem', fontWeight: 600, color: '#1e3a8a', marginBottom: '0.5rem' }}>2. Datos del Destinatario</h4>
+                <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--c-slate-dark)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.5rem' }}>
+                  2. Destinatario
+                </h4>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '0.75rem', marginBottom: '0.5rem' }}>
                   <input
                     type="text"
@@ -407,7 +408,7 @@ export default function EnviosPage() {
                     placeholder="Documento Receptor (CI)"
                     value={formData.destinatario.nroDocumento}
                     onChange={(e) => setFormData({ ...formData, destinatario: { ...formData.destinatario, nroDocumento: e.target.value } })}
-                    style={{ padding: '0.5rem', borderRadius: 6, border: '1px solid var(--border)', fontSize: '0.85rem' }}
+                    style={{ padding: '0.55rem', fontSize: '0.85rem' }}
                   />
                   <input
                     type="text"
@@ -415,38 +416,40 @@ export default function EnviosPage() {
                     placeholder="Nombre Completo del Receptor"
                     value={formData.destinatario.nombreCompleto}
                     onChange={(e) => setFormData({ ...formData, destinatario: { ...formData.destinatario, nombreCompleto: e.target.value } })}
-                    style={{ padding: '0.5rem', borderRadius: 6, border: '1px solid var(--border)', fontSize: '0.85rem' }}
+                    style={{ padding: '0.55rem', fontSize: '0.85rem' }}
                   />
                 </div>
                 <input
                   type="text"
-                  placeholder="Teléfono de contacto"
+                  placeholder="Teléfono del receptor"
                   value={formData.destinatario.telefono}
                   onChange={(e) => setFormData({ ...formData, destinatario: { ...formData.destinatario, telefono: e.target.value } })}
-                  style={{ width: '100%', padding: '0.5rem', borderRadius: 6, border: '1px solid var(--border)', fontSize: '0.85rem' }}
+                  style={{ width: '100%', padding: '0.55rem', fontSize: '0.85rem' }}
                 />
               </div>
 
               {/* Sección Ruta */}
               <div style={{ marginBottom: '1.25rem' }}>
-                <h4 style={{ fontSize: '0.9rem', fontWeight: 600, color: '#1e3a8a', marginBottom: '0.5rem' }}>3. Ruta del Envío</h4>
+                <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--c-slate-dark)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.5rem' }}>
+                  3. Ruta de Transporte
+                </h4>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '0.5rem' }}>
                   <div>
-                    <label style={{ fontSize: '0.75rem', color: '#64748b' }}>Ciudad Origen</label>
+                    <label style={{ fontSize: '0.75rem', color: 'var(--c-text-secondary)', display: 'block', marginBottom: 2 }}>Ciudad Origen</label>
                     <select
                       value={formData.origenCiudad}
                       onChange={(e) => setFormData({ ...formData, origenCiudad: e.target.value })}
-                      style={{ width: '100%', padding: '0.5rem', borderRadius: 6, border: '1px solid var(--border)', fontSize: '0.85rem' }}
+                      style={{ width: '100%', padding: '0.55rem', fontSize: '0.85rem' }}
                     >
                       {CIUDADES_PREDETERMINADAS.map(c => <option key={c} value={c}>{c}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label style={{ fontSize: '0.75rem', color: '#64748b' }}>Ciudad Destino</label>
+                    <label style={{ fontSize: '0.75rem', color: 'var(--c-text-secondary)', display: 'block', marginBottom: 2 }}>Ciudad Destino</label>
                     <select
                       value={formData.destinoCiudad}
                       onChange={(e) => setFormData({ ...formData, destinoCiudad: e.target.value })}
-                      style={{ width: '100%', padding: '0.5rem', borderRadius: 6, border: '1px solid var(--border)', fontSize: '0.85rem' }}
+                      style={{ width: '100%', padding: '0.55rem', fontSize: '0.85rem' }}
                     >
                       {CIUDADES_PREDETERMINADAS.map(c => <option key={c} value={c}>{c}</option>)}
                     </select>
@@ -459,7 +462,7 @@ export default function EnviosPage() {
                     placeholder="Dirección exacta origen"
                     value={formData.origenDireccion}
                     onChange={(e) => setFormData({ ...formData, origenDireccion: e.target.value })}
-                    style={{ padding: '0.5rem', borderRadius: 6, border: '1px solid var(--border)', fontSize: '0.85rem' }}
+                    style={{ padding: '0.55rem', fontSize: '0.85rem' }}
                   />
                   <input
                     type="text"
@@ -467,17 +470,19 @@ export default function EnviosPage() {
                     placeholder="Dirección exacta destino"
                     value={formData.destinoDireccion}
                     onChange={(e) => setFormData({ ...formData, destinoDireccion: e.target.value })}
-                    style={{ padding: '0.5rem', borderRadius: 6, border: '1px solid var(--border)', fontSize: '0.85rem' }}
+                    style={{ padding: '0.55rem', fontSize: '0.85rem' }}
                   />
                 </div>
               </div>
 
               {/* Sección Carga */}
-              <div style={{ marginBottom: '1.5rem' }}>
-                <h4 style={{ fontSize: '0.9rem', fontWeight: 600, color: '#1e3a8a', marginBottom: '0.5rem' }}>4. Carga y Mercancía</h4>
+              <div style={{ marginBottom: '1.75rem' }}>
+                <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--c-slate-dark)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.5rem' }}>
+                  4. Detalle de la Mercancía
+                </h4>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '0.75rem' }}>
                   <div>
-                    <label style={{ fontSize: '0.75rem', color: '#64748b' }}>Peso (kg) &gt; 0</label>
+                    <label style={{ fontSize: '0.75rem', color: 'var(--c-text-secondary)', display: 'block', marginBottom: 2 }}>Peso (kg) &gt; 0</label>
                     <input
                       type="number"
                       step="0.1"
@@ -485,17 +490,17 @@ export default function EnviosPage() {
                       required
                       value={formData.pesoKg}
                       onChange={(e) => setFormData({ ...formData, pesoKg: e.target.value })}
-                      style={{ width: '100%', padding: '0.5rem', borderRadius: 6, border: '1px solid var(--border)', fontSize: '0.85rem' }}
+                      style={{ width: '100%', padding: '0.55rem', fontSize: '0.85rem' }}
                     />
                   </div>
                   <div>
-                    <label style={{ fontSize: '0.75rem', color: '#64748b' }}>Descripción del Contenido</label>
+                    <label style={{ fontSize: '0.75rem', color: 'var(--c-text-secondary)', display: 'block', marginBottom: 2 }}>Descripción de la Carga</label>
                     <input
                       type="text"
                       required
                       value={formData.descripcionCarga}
                       onChange={(e) => setFormData({ ...formData, descripcionCarga: e.target.value })}
-                      style={{ width: '100%', padding: '0.5rem', borderRadius: 6, border: '1px solid var(--border)', fontSize: '0.85rem' }}
+                      style={{ width: '100%', padding: '0.55rem', fontSize: '0.85rem' }}
                     />
                   </div>
                 </div>
@@ -514,31 +519,15 @@ export default function EnviosPage() {
         </div>
       )}
 
-      {/* MODAL 2: CAMBIO DE ESTADO CON TRANSICIÓN VÁLIDA (HU-ENV-04) */}
+      {/* MODAL 2: CAMBIO DE ESTADO (HU-ENV-04) */}
       {showStatusModal && selectedEnvio && (
-        <div style={{
-          position: 'fixed',
-          top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-          padding: '1.5rem'
-        }}>
-          <div style={{
-            backgroundColor: '#ffffff',
-            borderRadius: 12,
-            width: '100%',
-            maxWidth: 480,
-            padding: '1.75rem',
-            boxShadow: 'var(--shadow-lg)'
-          }}>
-            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.5rem' }}>
-              Transición de Estado — {selectedEnvio.codigo_seguimiento}
+        <div className="modal-backdrop">
+          <div className="modal-content" style={{ maxWidth: 480 }}>
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--c-dark)', marginBottom: '0.25rem' }}>
+              Transición de Estado
             </h3>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1.25rem' }}>
-              Estado actual: <strong>{selectedEnvio.estado_codigo}</strong>
+            <p style={{ fontSize: '0.825rem', color: 'var(--c-text-secondary)', marginBottom: '1.25rem' }}>
+              Envío <strong>{selectedEnvio.codigo_seguimiento}</strong> (Actual: <span style={{ fontWeight: 600 }}>{selectedEnvio.estado_codigo}</span>)
             </p>
 
             <form onSubmit={handleCambiarEstado}>
@@ -549,24 +538,24 @@ export default function EnviosPage() {
                 <select
                   value={targetEstado}
                   onChange={(e) => setTargetEstado(e.target.value)}
-                  style={{ width: '100%', padding: '0.6rem', borderRadius: 6, border: '1px solid var(--border)', fontSize: '0.9rem' }}
+                  style={{ width: '100%', padding: '0.65rem', fontSize: '0.875rem' }}
                 >
                   {selectedEnvio.estado_codigo === 'REGISTRADO' && (
                     <>
                       <option value="PENDIENTE">PENDIENTE (Aprobado para despacho)</option>
-                      <option value="CANCELADO">CANCELADO (Anulación de servicio)</option>
+                      <option value="CANCELADO">CANCELADO (Anular envío)</option>
                     </>
                   )}
                   {selectedEnvio.estado_codigo === 'PENDIENTE' && (
                     <>
-                      <option value="EN_TRANSITO">EN_TRANSITO (Mercancía en viaje)</option>
-                      <option value="CANCELADO">CANCELADO (Anulación de servicio)</option>
+                      <option value="EN_TRANSITO">EN_TRANSITO (Carga en viaje)</option>
+                      <option value="CANCELADO">CANCELADO (Anular envío)</option>
                     </>
                   )}
                   {selectedEnvio.estado_codigo === 'EN_TRANSITO' && (
                     <>
-                      <option value="ENTREGADO">ENTREGADO (Confirmada la recepción)</option>
-                      <option value="CANCELADO">CANCELADO (Incidencia grave)</option>
+                      <option value="ENTREGADO">ENTREGADO (Recepción en destino)</option>
+                      <option value="CANCELADO">CANCELADO (Incidencia de viaje)</option>
                     </>
                   )}
                 </select>
@@ -574,7 +563,7 @@ export default function EnviosPage() {
 
               <div style={{ marginBottom: '1.5rem' }}>
                 <label style={{ fontSize: '0.8rem', fontWeight: 600, display: 'block', marginBottom: '0.35rem' }}>
-                  Observación / Motivo {targetEstado === 'CANCELADO' && <span style={{ color: '#dc2626' }}>(Obligatorio al cancelar)</span>}:
+                  Observación / Motivo {targetEstado === 'CANCELADO' && <span style={{ color: 'var(--c-danger)' }}>* Obligatorio al cancelar</span>}:
                 </label>
                 <textarea
                   required={targetEstado === 'CANCELADO'}
@@ -582,7 +571,7 @@ export default function EnviosPage() {
                   value={statusObservacion}
                   onChange={(e) => setStatusObservacion(e.target.value)}
                   placeholder="Detalle el motivo del cambio de estado..."
-                  style={{ width: '100%', padding: '0.6rem', borderRadius: 6, border: '1px solid var(--border)', fontSize: '0.85rem' }}
+                  style={{ width: '100%', padding: '0.65rem', fontSize: '0.85rem' }}
                 />
               </div>
 
@@ -601,32 +590,14 @@ export default function EnviosPage() {
 
       {/* MODAL 3: TRAZABILIDAD Y DETALLE (HU-ENV-03) */}
       {showDetailModal && selectedEnvio && (
-        <div style={{
-          position: 'fixed',
-          top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-          padding: '1.5rem'
-        }}>
-          <div style={{
-            backgroundColor: '#ffffff',
-            borderRadius: 12,
-            width: '100%',
-            maxWidth: 620,
-            maxHeight: '85vh',
-            overflowY: 'auto',
-            padding: '1.75rem',
-            boxShadow: 'var(--shadow-lg)'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem' }}>
+        <div className="modal-backdrop">
+          <div className="modal-content" style={{ maxWidth: 620 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid var(--c-slate-border)', paddingBottom: '0.75rem' }}>
               <div>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#1e3a8a' }}>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--c-dark)' }}>
                   {selectedEnvio.codigo_seguimiento}
                 </h3>
-                <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
+                <div style={{ fontSize: '0.75rem', color: 'var(--c-text-muted)' }}>
                   Registrado el {new Date(selectedEnvio.fecha_registro).toLocaleString()}
                 </div>
               </div>
@@ -634,30 +605,30 @@ export default function EnviosPage() {
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.25rem' }}>
-              <div style={{ backgroundColor: '#f8fafc', padding: '0.85rem', borderRadius: 8 }}>
-                <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' }}>Remitente</div>
-                <div style={{ fontWeight: 600 }}>{selectedEnvio.remitente_nombre}</div>
-                <div style={{ fontSize: '0.8rem', color: '#475569' }}>{selectedEnvio.origen_ciudad} — {selectedEnvio.origen_direccion}</div>
+              <div style={{ backgroundColor: 'var(--c-slate-light)', padding: '0.85rem', borderRadius: 'var(--radius-sm)' }}>
+                <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--c-slate-dark)', textTransform: 'uppercase' }}>Remitente</div>
+                <div style={{ fontWeight: 600, color: 'var(--c-dark)', marginTop: 2 }}>{selectedEnvio.remitente_nombre}</div>
+                <div style={{ fontSize: '0.8rem', color: 'var(--c-text-secondary)', marginTop: 2 }}>{selectedEnvio.origen_ciudad} — {selectedEnvio.origen_direccion}</div>
               </div>
-              <div style={{ backgroundColor: '#f8fafc', padding: '0.85rem', borderRadius: 8 }}>
-                <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' }}>Destinatario</div>
-                <div style={{ fontWeight: 600 }}>{selectedEnvio.destinatario_nombre}</div>
-                <div style={{ fontSize: '0.8rem', color: '#475569' }}>{selectedEnvio.destino_ciudad} — {selectedEnvio.destino_direccion}</div>
+              <div style={{ backgroundColor: 'var(--c-slate-light)', padding: '0.85rem', borderRadius: 'var(--radius-sm)' }}>
+                <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--c-slate-dark)', textTransform: 'uppercase' }}>Destinatario</div>
+                <div style={{ fontWeight: 600, color: 'var(--c-dark)', marginTop: 2 }}>{selectedEnvio.destinatario_nombre}</div>
+                <div style={{ fontSize: '0.8rem', color: 'var(--c-text-secondary)', marginTop: 2 }}>{selectedEnvio.destino_ciudad} — {selectedEnvio.destino_direccion}</div>
               </div>
             </div>
 
-            <div style={{ marginBottom: '1.5rem' }}>
-              <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', marginBottom: '0.25rem' }}>Detalle de Carga</div>
-              <div style={{ fontSize: '0.875rem' }}>{selectedEnvio.descripcion_carga} — <strong>{selectedEnvio.peso_kg} kg</strong></div>
+            <div style={{ marginBottom: '1.5rem', padding: '0.75rem 0.85rem', border: '1px solid var(--c-slate-border)', borderRadius: 'var(--radius-sm)' }}>
+              <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--c-slate-dark)', textTransform: 'uppercase' }}>Carga</div>
+              <div style={{ fontSize: '0.875rem', color: 'var(--c-dark)', marginTop: 2 }}>{selectedEnvio.descripcion_carga} — <strong>{selectedEnvio.peso_kg} kg</strong></div>
             </div>
 
             {/* Historial de Trazabilidad */}
             <div>
-              <h4 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                <Clock size={16} color="#0f766e" />
+              <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--c-dark)', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                <Clock size={16} color="var(--c-mint-dark)" />
                 <span>Línea de Tiempo del Historial</span>
               </h4>
-              <div style={{ borderLeft: '2px solid #e2e8f0', paddingLeft: '1rem', marginLeft: '0.5rem' }}>
+              <div style={{ borderLeft: '2px solid var(--c-slate-border)', paddingLeft: '1rem', marginLeft: '0.5rem' }}>
                 {selectedEnvio.historial && selectedEnvio.historial.length > 0 ? (
                   selectedEnvio.historial.map((h, i) => (
                     <div key={i} style={{ marginBottom: '1rem', position: 'relative' }}>
@@ -668,23 +639,23 @@ export default function EnviosPage() {
                         width: 10,
                         height: 10,
                         borderRadius: '50%',
-                        backgroundColor: '#2563eb'
+                        backgroundColor: 'var(--c-mint)'
                       }} />
-                      <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#1e293b' }}>
+                      <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--c-dark)' }}>
                         {h.estado_nuevo_nombre || h.estado_nuevo_codigo}
                       </div>
-                      <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--c-text-muted)' }}>
                         {new Date(h.fecha_cambio).toLocaleString()} • Por: <strong>{h.usuario || 'Sistema'}</strong>
                       </div>
                       {h.observacion && (
-                        <div style={{ fontSize: '0.8rem', color: '#475569', fontStyle: 'italic', marginTop: '0.2rem' }}>
+                        <div style={{ fontSize: '0.8rem', color: 'var(--c-text-secondary)', fontStyle: 'italic', marginTop: '0.2rem' }}>
                           "{h.observacion}"
                         </div>
                       )}
                     </div>
                   ))
                 ) : (
-                  <div style={{ fontSize: '0.8rem', color: '#64748b' }}>Sin historial adicional registrado</div>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--c-text-muted)' }}>Sin historial registrado</div>
                 )}
               </div>
             </div>

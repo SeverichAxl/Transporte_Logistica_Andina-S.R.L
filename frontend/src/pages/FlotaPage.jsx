@@ -11,13 +11,12 @@ import {
   Wrench, 
   Ban, 
   AlertCircle, 
-  CheckCircle, 
   X, 
   RefreshCw, 
   Clock, 
   Trash2,
-  Edit,
-  Activity
+  Activity,
+  ShieldCheck
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -177,21 +176,23 @@ export default function FlotaPage() {
       {/* Alertas */}
       {successMsg && (
         <div style={{
-          backgroundColor: '#f0fdf4',
-          border: '1px solid #bbf7d0',
-          color: '#166534',
+          backgroundColor: 'var(--c-mint-light)',
+          border: '1px solid var(--c-mint-border)',
+          color: 'var(--c-mint-dark)',
           padding: '0.85rem 1.25rem',
-          borderRadius: 8,
+          borderRadius: 'var(--radius-md)',
           marginBottom: '1.25rem',
           display: 'flex',
           justifyContent: 'space-between',
-          alignItems: 'center'
+          alignItems: 'center',
+          fontWeight: 500,
+          fontSize: '0.875rem'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <CheckCircle size={18} />
+            <CheckCircle2 size={18} color="var(--c-mint-dark)" />
             <span>{successMsg}</span>
           </div>
-          <button onClick={() => setSuccessMsg('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#166534' }}>
+          <button onClick={() => setSuccessMsg('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--c-mint-dark)' }}>
             <X size={16} />
           </button>
         </div>
@@ -199,75 +200,85 @@ export default function FlotaPage() {
 
       {errorMsg && (
         <div style={{
-          backgroundColor: '#fef2f2',
-          border: '1px solid #fecaca',
-          color: '#991b1b',
+          backgroundColor: 'var(--c-danger-bg)',
+          border: '1px solid var(--c-danger-border)',
+          color: 'var(--c-danger)',
           padding: '0.85rem 1.25rem',
-          borderRadius: 8,
+          borderRadius: 'var(--radius-md)',
           marginBottom: '1.25rem',
           display: 'flex',
           justifyContent: 'space-between',
-          alignItems: 'center'
+          alignItems: 'center',
+          fontWeight: 500,
+          fontSize: '0.875rem'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <AlertCircle size={18} />
             <span>{errorMsg}</span>
           </div>
-          <button onClick={() => setErrorMsg('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#991b1b' }}>
+          <button onClick={() => setErrorMsg('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--c-danger)' }}>
             <X size={16} />
           </button>
         </div>
       )}
 
-      {/* Contadores / KPIs de Flota (FE-FLO-01) */}
-      <div className="grid-cards" style={{ marginBottom: '1.5rem' }}>
-        <div className="card" style={{ borderLeft: '4px solid #16a34a' }}>
+      {/* Tarjetas de Métricas de Flota (FE-FLO-01) */}
+      <div className="grid-cards">
+        <div className="card" style={{ borderTop: '3px solid var(--c-mint)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
-              <div className="card-desc" style={{ marginBottom: 2 }}>Disponibles</div>
-              <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#16a34a' }}>{metricas.disponibles}</div>
+              <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--c-slate-dark)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Disponibles</div>
+              <div style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--c-mint-dark)', marginTop: 2 }}>{metricas.disponibles}</div>
             </div>
-            <CheckCircle2 size={32} color="#16a34a" />
+            <div style={{ width: 40, height: 40, borderRadius: 'var(--radius-md)', backgroundColor: 'var(--c-mint-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <CheckCircle2 size={22} color="var(--c-mint-dark)" />
+            </div>
           </div>
-          <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.5rem' }}>Listos para asignación</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--c-text-muted)', marginTop: '0.5rem' }}>Listos para asignación inmediata</div>
         </div>
 
-        <div className="card" style={{ borderLeft: '4px solid #0284c7' }}>
+        <div className="card" style={{ borderTop: '3px solid var(--c-slate)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
-              <div className="card-desc" style={{ marginBottom: 2 }}>En Ruta</div>
-              <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#0284c7' }}>{metricas.en_ruta}</div>
+              <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--c-slate-dark)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>En Ruta</div>
+              <div style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--c-slate-dark)', marginTop: 2 }}>{metricas.en_ruta}</div>
             </div>
-            <Truck size={32} color="#0284c7" />
+            <div style={{ width: 40, height: 40, borderRadius: 'var(--radius-md)', backgroundColor: 'var(--c-slate-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Truck size={22} color="var(--c-slate-dark)" />
+            </div>
           </div>
-          <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.5rem' }}>En tránsito nacional</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--c-text-muted)', marginTop: '0.5rem' }}>En tránsito nacional</div>
         </div>
 
-        <div className="card" style={{ borderLeft: '4px solid #ca8a04' }}>
+        <div className="card" style={{ borderTop: '3px solid var(--c-warning)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
-              <div className="card-desc" style={{ marginBottom: 2 }}>Mantenimiento</div>
-              <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#ca8a04' }}>{metricas.mantenimiento}</div>
+              <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--c-slate-dark)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Mantenimiento</div>
+              <div style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--c-warning)', marginTop: 2 }}>{metricas.mantenimiento}</div>
             </div>
-            <Wrench size={32} color="#ca8a04" />
+            <div style={{ width: 40, height: 40, borderRadius: 'var(--radius-md)', backgroundColor: 'var(--c-warning-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Wrench size={22} color="var(--c-warning)" />
+            </div>
           </div>
-          <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.5rem' }}>Revisión preventiva</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--c-text-muted)', marginTop: '0.5rem' }}>Revisión preventiva</div>
         </div>
 
-        <div className="card" style={{ borderLeft: '4px solid #dc2626' }}>
+        <div className="card" style={{ borderTop: '3px solid var(--c-danger)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
-              <div className="card-desc" style={{ marginBottom: 2 }}>Fuera de Servicio</div>
-              <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#dc2626' }}>{metricas.fuera_servicio}</div>
+              <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--c-slate-dark)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Fuera de Servicio</div>
+              <div style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--c-danger)', marginTop: 2 }}>{metricas.fuera_servicio}</div>
             </div>
-            <Ban size={32} color="#dc2626" />
+            <div style={{ width: 40, height: 40, borderRadius: 'var(--radius-md)', backgroundColor: 'var(--c-danger-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Ban size={22} color="var(--c-danger)" />
+            </div>
           </div>
-          <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.5rem' }}>Inactivos o baja</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--c-text-muted)', marginTop: '0.5rem' }}>Baja lógica o inoperativo</div>
         </div>
       </div>
 
       {/* Barra de Filtros */}
-      <div className="card" style={{ marginBottom: '1.5rem' }}>
+      <div className="card" style={{ marginBottom: '1.5rem', padding: '1rem 1.25rem' }}>
         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
           <div style={{ position: 'relative', flex: 1, minWidth: 220 }}>
             <input
@@ -278,26 +289,21 @@ export default function FlotaPage() {
               placeholder="Buscar por placa (ej: 4052-ABC) y Enter..."
               style={{
                 width: '100%',
-                padding: '0.6rem 0.75rem 0.6rem 2.25rem',
-                borderRadius: 6,
-                border: '1px solid var(--border)',
+                padding: '0.65rem 0.75rem 0.65rem 2.25rem',
                 fontSize: '0.875rem'
               }}
             />
-            <Search size={16} style={{ position: 'absolute', left: 10, top: 12, color: '#94a3b8' }} />
+            <Search size={16} style={{ position: 'absolute', left: 10, top: 13, color: 'var(--c-slate)' }} />
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Filter size={16} color="#64748b" />
+            <Filter size={16} color="var(--c-slate)" />
             <select
               value={filterEstado}
               onChange={(e) => setFilterEstado(e.target.value)}
               style={{
-                padding: '0.6rem 0.75rem',
-                borderRadius: 6,
-                border: '1px solid var(--border)',
-                fontSize: '0.875rem',
-                backgroundColor: '#ffffff'
+                padding: '0.65rem 0.85rem',
+                fontSize: '0.875rem'
               }}
             >
               <option value="">Todos los Estados</option>
@@ -316,98 +322,98 @@ export default function FlotaPage() {
               onChange={(e) => setFilterCapacidadMin(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && cargarVehiculos()}
               style={{
-                width: 160,
-                padding: '0.6rem 0.75rem',
-                borderRadius: 6,
-                border: '1px solid var(--border)',
+                width: 170,
+                padding: '0.65rem 0.75rem',
                 fontSize: '0.875rem'
               }}
             />
           </div>
 
           <button className="btn btn-outline" onClick={cargarVehiculos}>
-            <RefreshCw size={14} />
+            <RefreshCw size={14} color="var(--c-slate-dark)" />
             <span>Actualizar</span>
           </button>
         </div>
       </div>
 
-      {/* Tabla de Vehículos */}
+      {/* Tabla de Flota */}
       <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem' }}>
+        <div className="table-container">
+          <table>
             <thead>
-              <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid var(--border)', color: '#475569' }}>
-                <th style={{ padding: '0.9rem 1.25rem', fontWeight: 600 }}>Placa</th>
-                <th style={{ padding: '0.9rem 1rem', fontWeight: 600 }}>Vehículo / Marca</th>
-                <th style={{ padding: '0.9rem 1rem', fontWeight: 600 }}>Año</th>
-                <th style={{ padding: '0.9rem 1rem', fontWeight: 600 }}>Capacidad de Carga</th>
-                <th style={{ padding: '0.9rem 1rem', fontWeight: 600 }}>Estado Operativo</th>
-                <th style={{ padding: '0.9rem 1.25rem', fontWeight: 600, textAlign: 'right' }}>Acciones</th>
+              <tr>
+                <th>Placa</th>
+                <th>Vehículo / Marca</th>
+                <th>Año</th>
+                <th>Capacidad de Carga</th>
+                <th>Estado Operativo</th>
+                <th style={{ textAlign: 'right' }}>Acciones</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="6" style={{ padding: '2rem', textAlign: 'center', color: '#64748b' }}>
-                    Cargando vehículos...
+                  <td colSpan="6" style={{ padding: '2.5rem', textAlign: 'center', color: 'var(--c-text-muted)' }}>
+                    Cargando flota vehicular...
                   </td>
                 </tr>
               ) : vehiculos.length === 0 ? (
                 <tr>
-                  <td colSpan="6" style={{ padding: '3rem 1.5rem', textAlign: 'center' }}>
-                    <Truck size={36} color="#94a3b8" style={{ marginBottom: '0.5rem' }} />
-                    <div style={{ fontWeight: 600, color: 'var(--text-main)' }}>No se encontraron vehículos</div>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                      Registre un vehículo o cambie los criterios de búsqueda.
+                  <td colSpan="6" style={{ padding: '3.5rem 1.5rem', textAlign: 'center' }}>
+                    <Truck size={40} color="var(--c-slate)" style={{ marginBottom: '0.5rem' }} />
+                    <div style={{ fontWeight: 700, color: 'var(--c-dark)' }}>No se encontraron vehículos</div>
+                    <div style={{ fontSize: '0.825rem', color: 'var(--c-text-secondary)', marginTop: '0.25rem' }}>
+                      Registre una unidad o modifique los criterios de búsqueda.
                     </div>
                   </td>
                 </tr>
               ) : (
                 vehiculos.map((v) => (
-                  <tr key={v.id_vehiculo} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                    <td style={{ padding: '0.9rem 1.25rem', fontWeight: 700, color: '#1e3a8a' }}>
+                  <tr key={v.id_vehiculo}>
+                    <td style={{ fontWeight: 700, color: 'var(--c-dark)', letterSpacing: '0.04em' }}>
                       {v.placa}
                     </td>
-                    <td style={{ padding: '0.9rem 1rem' }}>
-                      <div style={{ fontWeight: 600 }}>{v.marca} {v.modelo}</div>
-                      <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Licencia requerida: Cat. {v.categoria_licencia_requerida || 'C'}</div>
+                    <td>
+                      <div style={{ fontWeight: 600, color: 'var(--c-dark)' }}>{v.marca} {v.modelo}</div>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--c-text-secondary)' }}>Licencia: Cat. {v.categoria_licencia_requerida || 'C'}</div>
                     </td>
-                    <td style={{ padding: '0.9rem 1rem' }}>{v.anio}</td>
-                    <td style={{ padding: '0.9rem 1rem', fontWeight: 600 }}>
-                      {parseFloat(v.capacidad_carga_kg).toLocaleString()} kg
+                    <td style={{ color: 'var(--c-text-primary)' }}>{v.anio}</td>
+                    <td>
+                      <div style={{ fontWeight: 600, color: 'var(--c-dark)' }}>
+                        {parseFloat(v.capacidad_carga_kg).toLocaleString()} kg
+                      </div>
                     </td>
-                    <td style={{ padding: '0.9rem 1rem' }}>
+                    <td>
                       <StatusBadge status={v.estado_codigo} />
                     </td>
-                    <td style={{ padding: '0.9rem 1.25rem', textAlign: 'right' }}>
-                      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.4rem' }}>
+                    <td style={{ textAlign: 'right' }}>
+                      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.45rem' }}>
                         <button
                           onClick={() => verHistorial(v)}
                           className="btn btn-outline"
-                          style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem' }}
-                          title="Ver historial de cambios operativos"
+                          style={{ padding: '0.35rem 0.7rem', fontSize: '0.775rem' }}
+                          title="Ver historial operativo"
                         >
-                          <Clock size={14} />
+                          <Clock size={13} color="var(--c-slate-dark)" />
                           <span>Historial</span>
                         </button>
                         <button
                           onClick={() => abrirCambioEstado(v)}
-                          className="btn btn-outline"
-                          style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem' }}
+                          className="btn btn-dark"
+                          style={{ padding: '0.35rem 0.7rem', fontSize: '0.775rem' }}
                           title="Cambiar estado operativo"
                         >
-                          <Activity size={14} />
+                          <Activity size={13} color="var(--c-mint)" />
                           <span>Estado</span>
                         </button>
                         {v.activo && v.estado_codigo !== 'EN_RUTA' && (
                           <button
                             onClick={() => abrirBaja(v)}
                             className="btn btn-outline"
-                            style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem', color: '#dc2626', borderColor: '#fecaca' }}
-                            title="Dar de baja de la flota"
+                            style={{ padding: '0.35rem 0.6rem', fontSize: '0.775rem', color: 'var(--c-danger)', borderColor: 'var(--c-danger-border)' }}
+                            title="Dar de baja definitiva de la flota"
                           >
-                            <Trash2 size={14} />
+                            <Trash2 size={13} />
                           </button>
                         )}
                       </div>
@@ -422,30 +428,32 @@ export default function FlotaPage() {
 
       {/* MODAL 1: REGISTRAR VEHÍCULO (HU-FLO-01) */}
       {showCreateModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-          padding: '1.5rem'
-        }}>
-          <div style={{
-            backgroundColor: '#ffffff',
-            borderRadius: 12,
-            width: '100%',
-            maxWidth: 540,
-            padding: '1.75rem',
-            boxShadow: 'var(--shadow-lg)'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid var(--border)', paddingBottom: '0.75rem' }}>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Truck size={20} color="#0f766e" />
-                Registrar Vehículo en Flota (HU-FLO-01)
-              </h3>
-              <button onClick={() => setShowCreateModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+        <div className="modal-backdrop">
+          <div className="modal-content" style={{ maxWidth: 540 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid var(--c-slate-border)', paddingBottom: '0.75rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                <div style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 'var(--radius-sm)',
+                  backgroundColor: 'var(--c-mint-light)',
+                  color: 'var(--c-mint-dark)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  <Truck size={18} />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--c-dark)' }}>
+                    Registrar Vehículo en Flota
+                  </h3>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--c-text-secondary)' }}>
+                    Estado inicial DISPONIBLE con verificación de placa única
+                  </div>
+                </div>
+              </div>
+              <button onClick={() => setShowCreateModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--c-slate)' }}>
                 <X size={20} />
               </button>
             </div>
@@ -462,7 +470,7 @@ export default function FlotaPage() {
                     placeholder="4052-ABC"
                     value={formData.placa}
                     onChange={(e) => setFormData({ ...formData, placa: e.target.value })}
-                    style={{ width: '100%', padding: '0.55rem', borderRadius: 6, border: '1px solid var(--border)', fontSize: '0.875rem' }}
+                    style={{ width: '100%', padding: '0.55rem', fontSize: '0.875rem' }}
                   />
                 </div>
                 <div>
@@ -476,7 +484,7 @@ export default function FlotaPage() {
                     max="2100"
                     value={formData.anio}
                     onChange={(e) => setFormData({ ...formData, anio: e.target.value })}
-                    style={{ width: '100%', padding: '0.55rem', borderRadius: 6, border: '1px solid var(--border)', fontSize: '0.875rem' }}
+                    style={{ width: '100%', padding: '0.55rem', fontSize: '0.875rem' }}
                   />
                 </div>
               </div>
@@ -491,7 +499,7 @@ export default function FlotaPage() {
                     required
                     value={formData.marca}
                     onChange={(e) => setFormData({ ...formData, marca: e.target.value })}
-                    style={{ width: '100%', padding: '0.55rem', borderRadius: 6, border: '1px solid var(--border)', fontSize: '0.875rem' }}
+                    style={{ width: '100%', padding: '0.55rem', fontSize: '0.875rem' }}
                   />
                 </div>
                 <div>
@@ -503,15 +511,15 @@ export default function FlotaPage() {
                     required
                     value={formData.modelo}
                     onChange={(e) => setFormData({ ...formData, modelo: e.target.value })}
-                    style={{ width: '100%', padding: '0.55rem', borderRadius: 6, border: '1px solid var(--border)', fontSize: '0.875rem' }}
+                    style={{ width: '100%', padding: '0.55rem', fontSize: '0.875rem' }}
                   />
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.75rem' }}>
                 <div>
                   <label style={{ fontSize: '0.8rem', fontWeight: 600, display: 'block', marginBottom: '0.35rem' }}>
-                    Capacidad de Carga (kg) &gt; 0
+                    Capacidad Carga (kg) &gt; 0
                   </label>
                   <input
                     type="number"
@@ -520,7 +528,7 @@ export default function FlotaPage() {
                     required
                     value={formData.capacidadCargaKg}
                     onChange={(e) => setFormData({ ...formData, capacidadCargaKg: e.target.value })}
-                    style={{ width: '100%', padding: '0.55rem', borderRadius: 6, border: '1px solid var(--border)', fontSize: '0.875rem' }}
+                    style={{ width: '100%', padding: '0.55rem', fontSize: '0.875rem' }}
                   />
                 </div>
                 <div>
@@ -530,7 +538,7 @@ export default function FlotaPage() {
                   <select
                     value={formData.categoriaLicenciaRequerida}
                     onChange={(e) => setFormData({ ...formData, categoriaLicenciaRequerida: e.target.value })}
-                    style={{ width: '100%', padding: '0.55rem', borderRadius: 6, border: '1px solid var(--border)', fontSize: '0.875rem' }}
+                    style={{ width: '100%', padding: '0.55rem', fontSize: '0.875rem' }}
                   >
                     <option value="A">Categoría A (Livianos)</option>
                     <option value="B">Categoría B (Medianos)</option>
@@ -554,29 +562,13 @@ export default function FlotaPage() {
 
       {/* MODAL 2: CAMBIAR ESTADO OPERATIVO (HU-FLO-04) */}
       {showStatusModal && selectedVehiculo && (
-        <div style={{
-          position: 'fixed',
-          top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-          padding: '1.5rem'
-        }}>
-          <div style={{
-            backgroundColor: '#ffffff',
-            borderRadius: 12,
-            width: '100%',
-            maxWidth: 480,
-            padding: '1.75rem',
-            boxShadow: 'var(--shadow-lg)'
-          }}>
-            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.5rem' }}>
-              Cambiar Estado Operativo — Placa {selectedVehiculo.placa}
+        <div className="modal-backdrop">
+          <div className="modal-content" style={{ maxWidth: 480 }}>
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--c-dark)', marginBottom: '0.25rem' }}>
+              Cambiar Estado Operativo
             </h3>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1.25rem' }}>
-              Estado actual: <strong>{selectedVehiculo.estado_codigo}</strong>
+            <p style={{ fontSize: '0.825rem', color: 'var(--c-text-secondary)', marginBottom: '1.25rem' }}>
+              Placa <strong>{selectedVehiculo.placa}</strong> (Actual: <span style={{ fontWeight: 600 }}>{selectedVehiculo.estado_codigo}</span>)
             </p>
 
             <form onSubmit={handleCambiarEstado}>
@@ -587,7 +579,7 @@ export default function FlotaPage() {
                 <select
                   value={targetEstado}
                   onChange={(e) => setTargetEstado(e.target.value)}
-                  style={{ width: '100%', padding: '0.6rem', borderRadius: 6, border: '1px solid var(--border)', fontSize: '0.9rem' }}
+                  style={{ width: '100%', padding: '0.65rem', fontSize: '0.875rem' }}
                 >
                   <option value="DISPONIBLE">DISPONIBLE (Listo para ruta)</option>
                   <option value="EN_RUTA">EN_RUTA (Operación activa)</option>
@@ -598,7 +590,7 @@ export default function FlotaPage() {
 
               <div style={{ marginBottom: '1.5rem' }}>
                 <label style={{ fontSize: '0.8rem', fontWeight: 600, display: 'block', marginBottom: '0.35rem' }}>
-                  Motivo del Cambio <span style={{ color: '#dc2626' }}>* (Obligatorio)</span>:
+                  Motivo del Cambio <span style={{ color: 'var(--c-danger)' }}>* (Obligatorio)</span>:
                 </label>
                 <textarea
                   required
@@ -606,7 +598,7 @@ export default function FlotaPage() {
                   value={statusMotivo}
                   onChange={(e) => setStatusMotivo(e.target.value)}
                   placeholder="Ej: Mantenimiento preventivo de frenos y cambio de aceite..."
-                  style={{ width: '100%', padding: '0.6rem', borderRadius: 6, border: '1px solid var(--border)', fontSize: '0.85rem' }}
+                  style={{ width: '100%', padding: '0.65rem', fontSize: '0.85rem' }}
                 />
               </div>
 
@@ -625,33 +617,17 @@ export default function FlotaPage() {
 
       {/* MODAL 3: DAR DE BAJA (HU-FLO-03) */}
       {showBajaModal && selectedVehiculo && (
-        <div style={{
-          position: 'fixed',
-          top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-          padding: '1.5rem'
-        }}>
-          <div style={{
-            backgroundColor: '#ffffff',
-            borderRadius: 12,
-            width: '100%',
-            maxWidth: 480,
-            padding: '1.75rem',
-            boxShadow: 'var(--shadow-lg)'
-          }}>
-            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#dc2626', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <div className="modal-backdrop">
+          <div className="modal-content" style={{ maxWidth: 480 }}>
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--c-danger)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <Ban size={20} />
               Confirmar Baja de Vehículo
             </h3>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-main)', marginBottom: '1rem' }}>
+            <p style={{ fontSize: '0.875rem', color: 'var(--c-dark)', marginBottom: '0.75rem' }}>
               ¿Está seguro de dar de baja al vehículo con placa <strong>{selectedVehiculo.placa}</strong> ({selectedVehiculo.marca} {selectedVehiculo.modelo})?
             </p>
-            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1.25rem' }}>
-              Esta acción es una baja lógica: el vehículo pasará al estado <strong>FUERA DE SERVICIO</strong> y ya no podrá ser asignado a ninguna operación de transporte.
+            <p style={{ fontSize: '0.8rem', color: 'var(--c-text-muted)', marginBottom: '1.25rem' }}>
+              Baja lógica: El vehículo pasará al estado <strong>FUERA DE SERVICIO</strong> y dejará de ser asignable a operaciones de transporte.
             </p>
 
             <form onSubmit={handleDarDeBaja}>
@@ -664,7 +640,7 @@ export default function FlotaPage() {
                   rows="2"
                   value={bajaMotivo}
                   onChange={(e) => setBajaMotivo(e.target.value)}
-                  style={{ width: '100%', padding: '0.6rem', borderRadius: 6, border: '1px solid var(--border)', fontSize: '0.85rem' }}
+                  style={{ width: '100%', padding: '0.65rem', fontSize: '0.85rem' }}
                 />
               </div>
 
@@ -672,7 +648,7 @@ export default function FlotaPage() {
                 <button type="button" onClick={() => setShowBajaModal(false)} className="btn btn-outline">
                   Cancelar
                 </button>
-                <button type="submit" className="btn btn-primary" style={{ backgroundColor: '#dc2626' }}>
+                <button type="submit" className="btn btn-primary" style={{ backgroundColor: 'var(--c-danger)', color: '#FFFFFF' }}>
                   Confirmar Baja
                 </button>
               </div>
@@ -683,32 +659,14 @@ export default function FlotaPage() {
 
       {/* MODAL 4: HISTORIAL DE VEHÍCULO */}
       {showDetailModal && selectedVehiculo && (
-        <div style={{
-          position: 'fixed',
-          top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-          padding: '1.5rem'
-        }}>
-          <div style={{
-            backgroundColor: '#ffffff',
-            borderRadius: 12,
-            width: '100%',
-            maxWidth: 580,
-            maxHeight: '85vh',
-            overflowY: 'auto',
-            padding: '1.75rem',
-            boxShadow: 'var(--shadow-lg)'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem' }}>
+        <div className="modal-backdrop">
+          <div className="modal-content" style={{ maxWidth: 580 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid var(--c-slate-border)', paddingBottom: '0.75rem' }}>
               <div>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#1e3a8a' }}>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--c-dark)' }}>
                   Placa: {selectedVehiculo.placa}
                 </h3>
-                <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
+                <div style={{ fontSize: '0.75rem', color: 'var(--c-text-muted)' }}>
                   {selectedVehiculo.marca} {selectedVehiculo.modelo} ({selectedVehiculo.anio}) • Capacidad: {parseFloat(selectedVehiculo.capacidad_carga_kg).toLocaleString()} kg
                 </div>
               </div>
@@ -716,11 +674,11 @@ export default function FlotaPage() {
             </div>
 
             <div>
-              <h4 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                <Clock size={16} color="#0f766e" />
+              <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--c-dark)', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                <Clock size={16} color="var(--c-mint-dark)" />
                 <span>Historial de Estados Operativos</span>
               </h4>
-              <div style={{ borderLeft: '2px solid #e2e8f0', paddingLeft: '1rem', marginLeft: '0.5rem' }}>
+              <div style={{ borderLeft: '2px solid var(--c-slate-border)', paddingLeft: '1rem', marginLeft: '0.5rem' }}>
                 {selectedVehiculo.historial && selectedVehiculo.historial.length > 0 ? (
                   selectedVehiculo.historial.map((h, i) => (
                     <div key={i} style={{ marginBottom: '1rem', position: 'relative' }}>
@@ -731,23 +689,23 @@ export default function FlotaPage() {
                         width: 10,
                         height: 10,
                         borderRadius: '50%',
-                        backgroundColor: '#0f766e'
+                        backgroundColor: 'var(--c-mint)'
                       }} />
-                      <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#1e293b' }}>
+                      <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--c-dark)' }}>
                         {h.estado_nuevo_nombre || h.estado_nuevo_codigo}
                       </div>
-                      <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--c-text-muted)' }}>
                         {new Date(h.fecha_cambio).toLocaleString()} • Por: <strong>{h.usuario || 'Sistema'}</strong>
                       </div>
                       {h.motivo && (
-                        <div style={{ fontSize: '0.8rem', color: '#475569', fontStyle: 'italic', marginTop: '0.2rem' }}>
+                        <div style={{ fontSize: '0.8rem', color: 'var(--c-text-secondary)', fontStyle: 'italic', marginTop: '0.2rem' }}>
                           "{h.motivo}"
                         </div>
                       )}
                     </div>
                   ))
                 ) : (
-                  <div style={{ fontSize: '0.8rem', color: '#64748b' }}>Sin cambios operativos previos registrados</div>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--c-text-muted)' }}>Sin historial registrado</div>
                 )}
               </div>
             </div>

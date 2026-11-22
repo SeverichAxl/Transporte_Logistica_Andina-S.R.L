@@ -1,25 +1,33 @@
 import React from 'react';
 
-const STATUS_MAP = {
-  REGISTRADO: { label: 'Registrado', type: 'info' },
-  PENDIENTE: { label: 'Pendiente', type: 'warning' },
-  EN_TRANSITO: { label: 'En Tránsito', type: 'warning' },
-  ENTREGADO: { label: 'Entregado', type: 'success' },
-  CANCELADO: { label: 'Cancelado', type: 'danger' },
-  DISPONIBLE: { label: 'Disponible', type: 'success' },
-  EN_RUTA: { label: 'En Ruta', type: 'info' },
-  MANTENIMIENTO: { label: 'Mantenimiento', type: 'warning' },
-  FUERA_DE_SERVICIO: { label: 'Fuera de Servicio', type: 'danger' },
-  ACTIVO: { label: 'Activo', type: 'success' },
-  INACTIVO: { label: 'Inactivo', type: 'neutral' },
-  SUSPENDIDO: { label: 'Suspendido', type: 'danger' }
+const STATUS_CONFIG = {
+  // Envíos
+  REGISTRADO: { label: 'Registrado', className: 'badge-slate' },
+  PENDIENTE: { label: 'Pendiente', className: 'badge-warning' },
+  EN_TRANSITO: { label: 'En Tránsito', className: 'badge-slate' },
+  ENTREGADO: { label: 'Entregado', className: 'badge-mint' },
+  CANCELADO: { label: 'Cancelado', className: 'badge-danger' },
+
+  // Flota
+  DISPONIBLE: { label: 'Disponible', className: 'badge-mint' },
+  EN_RUTA: { label: 'En Ruta', className: 'badge-slate' },
+  MANTENIMIENTO: { label: 'Mantenimiento', className: 'badge-warning' },
+  FUERA_SERVICIO: { label: 'Fuera de Servicio', className: 'badge-danger' },
+  FUERA_DE_SERVICIO: { label: 'Fuera de Servicio', className: 'badge-danger' },
+
+  // Conductores
+  ACTIVO: { label: 'Activo', className: 'badge-mint' },
+  OCUPADO: { label: 'Ocupado', className: 'badge-slate' },
+  INACTIVO: { label: 'Inactivo', className: 'badge-danger' },
+  SUSPENDIDO: { label: 'Suspendido', className: 'badge-danger' }
 };
 
 export default function StatusBadge({ status }) {
-  const config = STATUS_MAP[status] || { label: status || 'Desconocido', type: 'neutral' };
+  const normStatus = (status || '').toUpperCase().trim();
+  const config = STATUS_CONFIG[normStatus] || { label: status || 'Desconocido', className: 'badge-slate' };
 
   return (
-    <span className={`badge badge-${config.type}`}>
+    <span className={`badge ${config.className}`}>
       {config.label}
     </span>
   );
