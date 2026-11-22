@@ -10,11 +10,17 @@ const axiosClient = axios.create({
   }
 });
 
-// Interceptor para inyectar Correlation ID si no existe
+// Interceptor para inyectar Correlation ID y Token JWT
 axiosClient.interceptors.request.use((config) => {
   if (!config.headers['X-Correlation-Id']) {
     config.headers['X-Correlation-Id'] = `client-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
   }
+
+  const token = localStorage.getItem('tla_token');
+  if (token && !config.headers['Authorization']) {
+    config.headers['Authorization'] = `Bearer ${token}`;
+  }
+
   return config;
 });
 
@@ -27,13 +33,11 @@ axiosClient.interceptors.response.use(
     let errorDetails = null;
 
     if (error.response) {
-      // El servidor respondió con un código de estado fuera de 2xx
       const errorData = error.response.data?.error || error.response.data;
       errorCode = errorData?.code || `HTTP_${error.response.status}`;
       errorMessage = errorData?.message || `Error del servidor (${error.response.status})`;
       errorDetails = errorData?.details || null;
     } else if (error.request) {
-      // La solicitud fue realizada pero no hubo respuesta (API Gateway o microservicio apagado)
       errorMessage = 'No se pudo conectar con el API Gateway (puerto 3000). Verifique que los servicios estén activos.';
       errorCode = 'NETWORK_ERROR';
     } else {
