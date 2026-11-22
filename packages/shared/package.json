@@ -1,0 +1,14 @@
+{
+  "name": "@logistica-andina/shared",
+  "version": "1.0.0",
+  "description": "Utilidades compartidas para microservicios de Logística Andina",
+  "main": "src/index.js",
+  "type": "commonjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "pg": "^8.13.1"
+  }
+}

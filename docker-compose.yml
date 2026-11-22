@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: logistica_andina_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-logistica_andina}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # Montaje de esquemas y datos iniciales en orden alfabético
+      - ./db/01_schema_logistica_andina_v2.sql:/docker-entrypoint-initdb.d/01_schema_logistica_andina_v2.sql:ro
+      - ./db/02_datos_reglas_y_automatizacion_v2.sql:/docker-entrypoint-initdb.d/02_datos_reglas_y_automatizacion_v2.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-logistica_andina}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
+    driver: local

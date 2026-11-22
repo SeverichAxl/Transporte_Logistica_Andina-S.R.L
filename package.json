@@ -1,0 +1,29 @@
+{
+  "name": "logistica-andina-monorepo",
+  "version": "1.0.0",
+  "description": "Sistema Integral de Gestión Logística - Transporte y Logística Andina S.R.L.",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "gateway",
+    "services/*",
+    "frontend"
+  ],
+  "scripts": {
+    "install:all": "npm install",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
+    "db:reset": "docker compose down -v && docker compose up -d",
+    "dev:gateway": "npm run dev --workspace=gateway",
+    "dev:envios": "npm run dev --workspace=@logistica-andina/ms-envios",
+    "dev:flota": "npm run dev --workspace=@logistica-andina/ms-flota",
+    "dev:conductores": "npm run dev --workspace=@logistica-andina/ms-conductores",
+    "dev:entregas": "npm run dev --workspace=@logistica-andina/ms-entregas",
+    "dev:frontend": "npm run dev --workspace=@logistica-andina/frontend",
+    "dev": "concurrently -k -p \"[{name}]\" -n \"GATEWAY,ENVIOS,FLOTA,CONDUCTORES,ENTREGAS,FRONTEND\" -c \"cyan.bold,blue.bold,green.bold,magenta.bold,yellow.bold,red.bold\" \"npm run dev:gateway\" \"npm run dev:envios\" \"npm run dev:flota\" \"npm run dev:conductores\" \"npm run dev:entregas\" \"npm run dev:frontend\"",
+    "lint": "echo \"ESLint check placeholder: sin errores de sintaxis\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
