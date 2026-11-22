@@ -43,7 +43,23 @@ Este comando levantará con `concurrently`:
 
 ---
 
-## 3. Verificación de Salud del Sistema (Health Checks)
+## 3. Usuarios de Demostración Semilla (5 Roles de las Historias de Usuario)
+
+El backend de autenticación en el **API Gateway** (`POST /api/v1/auth/login`) incluye los 5 usuarios semilla con contraseñas hasheadas en `bcrypt` (`Password123!` para todos):
+
+| Rol | Username | Correo Electrónico | Nombre | Módulos Principales |
+| :---: | :--- | :--- | :--- | :--- |
+| **OP** | `operador` | `operador@logistica.andina` | Carlos Ramos | Envíos, Conductores, Entregas |
+| **AF** | `flota` | `flota@logistica.andina` | Ana Mendoza | Flota de Vehículos, Mantenimiento |
+| **DE** | `despachador` | `despacho@logistica.andina` | David Castro | Asignaciones, Envíos, Despachos |
+| **CO** | `conductor` | `conductor@logistica.andina` | Mario Huamán | Entregas y Evidencias Fotográficas |
+| **GE** | `gerente` | `gerencia@logistica.andina` | Gabriela Paz | Dashboard de KPIs, Panel Global |
+
+En la barra de navegación del frontend existe un selector directo para alternar entre cualquiera de estos 5 usuarios en un solo clic durante demostraciones.
+
+---
+
+## 4. Verificación de Salud del Sistema (Health Checks)
 
 - **Salud agregada del Gateway**:
   ```bash

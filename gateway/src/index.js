@@ -3,6 +3,8 @@ const cors = require('cors');
 const { randomUUID } = require('crypto');
 const config = require('./config');
 const healthRoutes = require('./routes/health.routes');
+const authRoutes = require('./routes/auth.routes');
+const { optionalAuth } = require('./auth/auth.middleware');
 const setupProxies = require('./middlewares/proxy');
 
 const app = express();
@@ -14,6 +16,9 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Correlation-Id', 'Idempotency-Key']
 }));
 
+// Parsear JSON para rutas manejadas internamente por el Gateway (como /auth)
+app.use(express.json());
+
 // Inyección / propagación de Correlation ID
 app.use((req, res, next) => {
   const correlationId = req.headers['x-correlation-id'] || randomUUID();
@@ -22,17 +27,23 @@ app.use((req, res, next) => {
   next();
 });
 
+// Middleware de autenticación opcional que decodifica JWT si viene en el header Authorization
+app.use(optionalAuth);
+
 // Logger básico para gateway
 app.use((req, res, next) => {
   const start = Date.now();
   res.on('finish', () => {
-    console.log(`[GATEWAY] ${req.method} ${req.originalUrl} -> ${res.statusCode} (${Date.now() - start}ms) [CID: ${req.correlationId}]`);
+    const userRole = req.user ? `[${req.user.rol}:${req.user.username}]` : '[Anon]';
+    console.log(`[GATEWAY] ${req.method} ${req.originalUrl} -> ${res.statusCode} (${Date.now() - start}ms) ${userRole} [CID: ${req.correlationId}]`);
   });
   next();
 });
 
 // Rutas directas del Gateway
 app.use(healthRoutes);
+app.use('/api/v1/auth', authRoutes);
+app.use('/auth', authRoutes); // Alias directo según criterios SEG-02
 
 // Proxies a microservicios
 setupProxies(app);
@@ -54,6 +65,7 @@ app.use((req, res) => {
 
 app.listen(config.port, () => {
   console.log(`🚀 API Gateway escuchando en el puerto ${config.port}`);
+  console.log(`🔐 Módulo de Autenticación montado en /api/v1/auth y /auth (5 usuarios activos)`);
   console.log(`📡 Rutas proxificadas:`);
   Object.values(config.services).forEach(s => {
     console.log(`   - ${s.pathPrefix} -> ${s.url}`);

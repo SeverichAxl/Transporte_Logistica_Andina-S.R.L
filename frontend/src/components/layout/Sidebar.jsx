@@ -6,7 +6,7 @@ import {
   Truck, 
   Users, 
   CheckCircle,
-  Network
+  ShieldCheck
 } from 'lucide-react';
 
 export default function Sidebar() {
@@ -21,17 +21,17 @@ export default function Sidebar() {
   return (
     <aside className="app-sidebar">
       <div className="sidebar-header">
-        <div className="sidebar-brand-icon">
-          🚚
+        <div className="sidebar-brand-badge">
+          <Truck size={20} color="#0A0908" />
         </div>
         <div className="sidebar-brand-text">
           <h2>LOGÍSTICA ANDINA</h2>
-          <p>S.R.L. • Plataforma Integral</p>
+          <p>S.R.L. • Sistema Integral</p>
         </div>
       </div>
 
       <nav className="sidebar-nav">
-        <div className="nav-section-title">Módulos del Sistema</div>
+        <div className="nav-section-title">Módulos Operativos</div>
         {navItems.map((item) => {
           const Icon = item.icon;
           return (
@@ -50,10 +50,10 @@ export default function Sidebar() {
 
       <div className="sidebar-footer">
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-          <Network size={14} color="#38bdf8" />
-          <span style={{ fontWeight: 600, color: '#f8fafc' }}>Microservicios v1.0</span>
+          <ShieldCheck size={14} color="#43C59E" />
+          <span style={{ fontWeight: 600, color: '#FFFFFF' }}>Microservicios v1.0</span>
         </div>
-        <div>Kata Arquitectónico 2026</div>
+        <div style={{ color: '#6A8EAE' }}>PostgreSQL 16 Multi-Esquema</div>
       </div>
     </aside>
   );
