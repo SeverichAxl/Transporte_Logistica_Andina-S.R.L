@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Activity, ShieldCheck, RefreshCw, ChevronDown, User, LogOut } from 'lucide-react';
+import { RefreshCw, ChevronDown, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
@@ -65,7 +65,7 @@ export default function Navbar() {
       </div>
 
       {/* Selector de Usuario Activo (5 Roles) y Logout */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', position: 'relative' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', position: 'relative' }}>
         <div style={{ position: 'relative' }}>
           <button
             onClick={() => setShowUserMenu(!showUserMenu)}
@@ -80,6 +80,7 @@ export default function Navbar() {
               cursor: 'pointer',
               boxShadow: 'var(--shadow-subtle)'
             }}
+            title="Haz clic para cambiar de rol rápidamente"
           >
             <div style={{
               width: 28,
@@ -113,7 +114,7 @@ export default function Navbar() {
               top: '100%',
               right: 0,
               marginTop: '0.5rem',
-              width: 270,
+              width: 280,
               backgroundColor: '#FFFFFF',
               borderRadius: '8px',
               boxShadow: 'var(--shadow-overlay)',
@@ -196,10 +197,24 @@ export default function Navbar() {
           )}
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.825rem', color: '#6A8EAE' }}>
-          <ShieldCheck size={16} color="#43C59E" />
-          <span style={{ fontWeight: 500 }}>PostgreSQL 16</span>
-        </div>
+        {/* Botón directo de Salir */}
+        <button
+          onClick={handleLogout}
+          className="btn btn-secondary"
+          style={{
+            padding: '0.45rem 0.75rem',
+            fontSize: '0.8rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.4rem',
+            color: '#C53030',
+            borderColor: '#FEB2B2'
+          }}
+          title="Cerrar sesión e ir a la pantalla de login"
+        >
+          <LogOut size={14} />
+          <span>Salir</span>
+        </button>
       </div>
     </header>
   );

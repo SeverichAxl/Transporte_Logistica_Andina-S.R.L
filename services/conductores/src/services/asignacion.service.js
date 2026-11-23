@@ -57,7 +57,10 @@ class AsignacionService {
    */
   async crear(body, { idempotencyKey, correlationId } = {}) {
     validarCreacionAsignacion(body);
-    const { codigoSeguimiento, placa, idConductor, observacion } = body;
+    const codigoSeguimiento = body.codigoSeguimiento || body.codigoEnvio;
+    const placa = body.placa || body.placaVehiculo;
+    const idConductor = body.idConductor;
+    const observacion = body.observacion || body.observaciones;
 
     // INT-03: misma clave + mismo cuerpo devuelve la respuesta original
     let hash = null;

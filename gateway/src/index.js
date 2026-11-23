@@ -16,9 +16,6 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Correlation-Id', 'Idempotency-Key']
 }));
 
-// Parsear JSON para rutas manejadas internamente por el Gateway (como /auth)
-app.use(express.json());
-
 // Inyección / propagación de Correlation ID
 app.use((req, res, next) => {
   const correlationId = req.headers['x-correlation-id'] || randomUUID();
@@ -40,12 +37,12 @@ app.use((req, res, next) => {
   next();
 });
 
-// Rutas directas del Gateway
+// Rutas directas del Gateway (usan express.json localmente para no interferir con los streams proxificados)
 app.use(healthRoutes);
-app.use('/api/v1/auth', authRoutes);
-app.use('/auth', authRoutes); // Alias directo según criterios SEG-02
+app.use('/api/v1/auth', express.json(), authRoutes);
+app.use('/auth', express.json(), authRoutes); // Alias directo según criterios SEG-02
 
-// Proxies a microservicios
+// Proxies a microservicios (el stream del body fluye sin bloqueo a los servicios)
 setupProxies(app);
 
 // Manejador de 404 para rutas no encontradas en el Gateway

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation, Navigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   Truck, 
   Lock, 
@@ -10,12 +10,14 @@ import {
   CheckCircle2, 
   ShieldCheck, 
   ArrowRight,
-  Sparkles
+  Sparkles,
+  LogOut,
+  ExternalLink
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export default function LoginPage() {
-  const { login, loginWithUser, isAuthenticated, availableUsers, loading } = useAuth();
+  const { user, login, loginWithUser, logout, isAuthenticated, availableUsers, loading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -24,12 +26,6 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Redirigir al dashboard si ya tiene sesión activa
-  if (isAuthenticated) {
-    const from = location.state?.from?.pathname || '/';
-    return <Navigate to={from} replace />;
-  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -110,7 +106,7 @@ export default function LoginPage() {
               Gestión Centralizada de Operaciones y Flota Nacional
             </h2>
             <p style={{ fontSize: '0.95rem', color: '#94a3b8', lineHeight: 1.6, marginBottom: '2rem' }}>
-              Sistema integral con arquitectura basada en microservicios, persistencia relacional aislada por esquema y control de acceso seguro por roles.
+              Sistema integral con arquitectura basada en microservicios, persistencia relacional multi-esquema y control de acceso estricto por roles (SEG-03).
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -128,7 +124,7 @@ export default function LoginPage() {
                   <CheckCircle2 size={16} color="#6A8EAE" />
                 </div>
                 <div style={{ fontSize: '0.875rem', color: '#CBD5E1' }}>
-                  Auditoría completa con propagación de usuario y <strong>X-Correlation-Id</strong>
+                  Aislamiento y autorización de vistas por rol: <strong>OP, AF, DE, CO, GE</strong>
                 </div>
               </div>
             </div>
@@ -151,13 +147,55 @@ export default function LoginPage() {
         justifyContent: 'center',
         padding: '2.5rem'
       }}>
-        <div style={{ width: '100%', maxWidth: 440 }}>
-          <div style={{ marginBottom: '2rem' }}>
+        <div style={{ width: '100%', maxWidth: 460 }}>
+          {/* Banner si ya hay sesión activa */}
+          {isAuthenticated && user && (
+            <div style={{
+              backgroundColor: '#e8f9f3',
+              border: '1px solid #43C59E',
+              borderRadius: '8px',
+              padding: '0.85rem 1rem',
+              marginBottom: '1.5rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '0.75rem'
+            }}>
+              <div>
+                <div style={{ fontSize: '0.8rem', color: '#0A0908', fontWeight: 700 }}>
+                  Sesión activa: {user.nombre}
+                </div>
+                <div style={{ fontSize: '0.72rem', color: '#6A8EAE' }}>
+                  Rol: {user.rolNombre} ({user.rol})
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <button
+                  type="button"
+                  onClick={() => navigate('/')}
+                  className="btn btn-primary"
+                  style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
+                >
+                  <span>Continuar</span> <ExternalLink size={12} />
+                </button>
+                <button
+                  type="button"
+                  onClick={logout}
+                  className="btn btn-secondary"
+                  style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.3rem', color: '#C53030' }}
+                >
+                  <LogOut size={12} /> <span>Salir</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          <div style={{ marginBottom: '1.75rem' }}>
             <h2 style={{ fontSize: '1.65rem', fontWeight: 800, color: '#0A0908', letterSpacing: '-0.02em', marginBottom: '0.35rem' }}>
-              Iniciar Sesión
+              {isAuthenticated ? 'Cambiar de Cuenta / Iniciar Sesión' : 'Iniciar Sesión'}
             </h2>
             <p style={{ fontSize: '0.875rem', color: '#4A5568' }}>
-              Ingrese sus credenciales corporativas para acceder al sistema.
+              Ingrese sus credenciales o seleccione uno de los 5 roles preconfigurados para probar los permisos.
             </p>
           </div>
 
@@ -275,7 +313,7 @@ export default function LoginPage() {
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            margin: '2rem 0 1.25rem 0',
+            margin: '1.75rem 0 1rem 0',
             color: '#6A8EAE',
             fontSize: '0.75rem',
             fontWeight: 700,
@@ -285,7 +323,7 @@ export default function LoginPage() {
             <div style={{ flex: 1, height: 1, backgroundColor: '#E2E8F0' }} />
             <span style={{ padding: '0 0.75rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
               <Sparkles size={12} color="#43C59E" />
-              <span>Acceso Rápido por Rol (Demostración)</span>
+              <span>Probar con los 5 Roles de las HU (1 Clic)</span>
             </span>
             <div style={{ flex: 1, height: 1, backgroundColor: '#E2E8F0' }} />
           </div>
@@ -302,8 +340,8 @@ export default function LoginPage() {
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   padding: '0.55rem 0.85rem',
-                  backgroundColor: '#F8FAFC',
-                  border: '1px solid #E2E8F0',
+                  backgroundColor: user?.id === u.id ? '#e8f9f3' : '#F8FAFC',
+                  border: `1px solid ${user?.id === u.id ? '#43C59E' : '#E2E8F0'}`,
                   borderRadius: '6px',
                   cursor: 'pointer',
                   textAlign: 'left',
@@ -314,8 +352,8 @@ export default function LoginPage() {
                   e.currentTarget.style.borderColor = '#43C59E';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = '#F8FAFC';
-                  e.currentTarget.style.borderColor = '#E2E8F0';
+                  e.currentTarget.style.backgroundColor = user?.id === u.id ? '#e8f9f3' : '#F8FAFC';
+                  e.currentTarget.style.borderColor = user?.id === u.id ? '#43C59E' : '#E2E8F0';
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
@@ -330,8 +368,12 @@ export default function LoginPage() {
                     {u.rol}
                   </span>
                   <div>
-                    <div style={{ fontSize: '0.825rem', fontWeight: 600, color: '#0A0908' }}>{u.nombre}</div>
-                    <div style={{ fontSize: '0.7rem', color: '#6A8EAE' }}>{u.rolNombre}</div>
+                    <div style={{ fontSize: '0.825rem', fontWeight: 600, color: '#0A0908' }}>
+                      {u.nombre} {user?.id === u.id ? '(Activo)' : ''}
+                    </div>
+                    <div style={{ fontSize: '0.7rem', color: '#6A8EAE' }}>
+                      {u.rolNombre} • [{u.modulosPermitidos?.join(', ')}]
+                    </div>
                   </div>
                 </div>
                 <ArrowRight size={14} color="#6A8EAE" />

@@ -19,7 +19,7 @@ export default function App() {
           {/* Ruta pública de Login */}
           <Route path="/login" element={<LoginPage />} />
 
-          {/* Rutas protegidas bajo el Layout corporativo */}
+          {/* Rutas protegidas bajo el Layout corporativo con RBAC estricto */}
           <Route
             path="/"
             element={
@@ -28,11 +28,46 @@ export default function App() {
               </ProtectedRoute>
             }
           >
-            <Route index element={<DashboardPage />} />
-            <Route path="envios" element={<EnviosPage />} />
-            <Route path="flota" element={<FlotaPage />} />
-            <Route path="conductores" element={<ConductoresPage />} />
-            <Route path="entregas" element={<EntregasPage />} />
+            <Route 
+              index 
+              element={
+                <ProtectedRoute modulo="dashboard">
+                  <DashboardPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="envios" 
+              element={
+                <ProtectedRoute modulo="envios">
+                  <EnviosPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="flota" 
+              element={
+                <ProtectedRoute modulo="flota">
+                  <FlotaPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="conductores" 
+              element={
+                <ProtectedRoute modulo="conductores">
+                  <ConductoresPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="entregas" 
+              element={
+                <ProtectedRoute modulo="entregas">
+                  <EntregasPage />
+                </ProtectedRoute>
+              } 
+            />
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Routes>

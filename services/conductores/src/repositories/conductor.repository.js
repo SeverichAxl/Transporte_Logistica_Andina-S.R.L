@@ -25,7 +25,7 @@ class ConductorRepository {
   }
 
   async findAll({ limit = 10, offset = 0, estado, documento, nombre }) {
-    const { query: filtros, params, idx } = this._filtros({ estado, documento, nombre });
+    let { query: filtros, params, idx } = this._filtros({ estado, documento, nombre });
 
     const query = `
       SELECT 

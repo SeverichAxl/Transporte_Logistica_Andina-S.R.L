@@ -56,7 +56,8 @@ export default function ConductoresPage() {
     direccion: '',
     licencia: {
       nroLicencia: '',
-      idCategoria: 3, // Cat C por defecto
+      categoria: 'C',
+      fechaEmision: new Date().toISOString().split('T')[0],
       fechaVencimiento: '2028-12-31'
     }
   };
@@ -65,7 +66,8 @@ export default function ConductoresPage() {
   // Formulario renovar licencia (HU-CON-02)
   const [licenciaForm, setLicenciaForm] = useState({
     nroLicencia: '',
-    idCategoria: 3,
+    categoria: 'C',
+    fechaEmision: new Date().toISOString().split('T')[0],
     fechaVencimiento: '2029-01-01'
   });
 
@@ -139,13 +141,26 @@ export default function ConductoresPage() {
     e.preventDefault();
     setErrorMsg('');
     try {
-      await axiosClient.post('/conductores', formData);
+      const payload = {
+        ...formData,
+        licencia: {
+          ...formData.licencia,
+          categoria: formData.licencia.categoria || 'C',
+          fechaEmision: formData.licencia.fechaEmision || new Date().toISOString().split('T')[0]
+        }
+      };
+      await axiosClient.post('/conductores', payload);
       setSuccessMsg(`¡Conductor ${formData.nombres} ${formData.apellidos} registrado exitosamente!`);
       setShowCreateModal(false);
       setFormData(initialForm);
       cargarConductores();
     } catch (err) {
-      setErrorMsg(err.message || 'Error al registrar conductor');
+      if (err.details && Array.isArray(err.details)) {
+        const detalle = err.details.map(d => `${d.campo}: ${d.mensaje}`).join(' | ');
+        setErrorMsg(`${err.message}: ${detalle}`);
+      } else {
+        setErrorMsg(err.message || 'Error al registrar conductor');
+      }
     }
   };
 
@@ -154,12 +169,22 @@ export default function ConductoresPage() {
     if (!selectedConductor) return;
     setErrorMsg('');
     try {
-      await axiosClient.post(`/conductores/${selectedConductor.id_conductor}/licencias`, licenciaForm);
+      const payload = {
+        ...licenciaForm,
+        categoria: licenciaForm.categoria || 'C',
+        fechaEmision: licenciaForm.fechaEmision || new Date().toISOString().split('T')[0]
+      };
+      await axiosClient.post(`/conductores/${selectedConductor.id_conductor}/licencias`, payload);
       setSuccessMsg(`Licencia renovada para ${selectedConductor.nombre_completo}`);
       setShowLicenciaModal(false);
       cargarConductores();
     } catch (err) {
-      setErrorMsg(err.message || 'Error al renovar licencia');
+      if (err.details && Array.isArray(err.details)) {
+        const detalle = err.details.map(d => `${d.campo}: ${d.mensaje}`).join(' | ');
+        setErrorMsg(`${err.message}: ${detalle}`);
+      } else {
+        setErrorMsg(err.message || 'Error al renovar licencia');
+      }
     }
   };
 
@@ -196,9 +221,12 @@ export default function ConductoresPage() {
     setErrorMsg('');
     try {
       await axiosClient.post('/conductores/asignaciones', {
+        codigoSeguimiento: asignacionForm.codigoEnvio,
+        placa: asignacionForm.placaVehiculo,
+        idConductor: parseInt(asignacionForm.idConductor, 10),
+        observacion: asignacionForm.observaciones,
         codigoEnvio: asignacionForm.codigoEnvio,
         placaVehiculo: asignacionForm.placaVehiculo,
-        idConductor: parseInt(asignacionForm.idConductor, 10),
         observaciones: asignacionForm.observaciones
       }, {
         headers: { 'Idempotency-Key': `asig-${Date.now()}` }
@@ -207,7 +235,12 @@ export default function ConductoresPage() {
       setShowAsignarModal(false);
       cargarAsignaciones();
     } catch (err) {
-      setErrorMsg(err.message || 'Error al ejecutar la saga de asignación');
+      if (err.details && Array.isArray(err.details)) {
+        const detalle = err.details.map(d => `${d.campo}: ${d.mensaje}`).join(' | ');
+        setErrorMsg(`${err.message}: ${detalle}`);
+      } else {
+        setErrorMsg(err.message || 'Error al ejecutar la saga de asignación');
+      }
     }
   };
 
@@ -672,7 +705,7 @@ export default function ConductoresPage() {
                 <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--c-slate-dark)', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
                   2. Licencia de Conducir
                 </h4>
-                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 2fr', gap: '0.75rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr', gap: '0.75rem' }}>
                   <div>
                     <label style={{ fontSize: '0.75rem', color: 'var(--c-text-secondary)', display: 'block', marginBottom: 2 }}>Nro. Licencia</label>
                     <input
@@ -687,14 +720,25 @@ export default function ConductoresPage() {
                   <div>
                     <label style={{ fontSize: '0.75rem', color: 'var(--c-text-secondary)', display: 'block', marginBottom: 2 }}>Categoría</label>
                     <select
-                      value={formData.licencia.idCategoria}
-                      onChange={(e) => setFormData({ ...formData, licencia: { ...formData.licencia, idCategoria: parseInt(e.target.value, 10) } })}
+                      value={formData.licencia.categoria}
+                      onChange={(e) => setFormData({ ...formData, licencia: { ...formData.licencia, categoria: e.target.value } })}
                       style={{ width: '100%', padding: '0.55rem', fontSize: '0.85rem' }}
                     >
-                      <option value={1}>A (Liviano)</option>
-                      <option value={2}>B (Mediano)</option>
-                      <option value={3}>C (Pesado)</option>
+                      <option value="A">Cat. A (Liviano)</option>
+                      <option value="B">Cat. B (Mediano)</option>
+                      <option value="C">Cat. C (Pesado)</option>
+                      <option value="P">Cat. P (Particular)</option>
                     </select>
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '0.75rem', color: 'var(--c-text-secondary)', display: 'block', marginBottom: 2 }}>Fecha Emisión</label>
+                    <input
+                      type="date"
+                      required
+                      value={formData.licencia.fechaEmision}
+                      onChange={(e) => setFormData({ ...formData, licencia: { ...formData.licencia, fechaEmision: e.target.value } })}
+                      style={{ width: '100%', padding: '0.55rem', fontSize: '0.85rem' }}
+                    />
                   </div>
                   <div>
                     <label style={{ fontSize: '0.75rem', color: 'var(--c-text-secondary)', display: 'block', marginBottom: 2 }}>Fecha Vencimiento</label>
@@ -725,7 +769,7 @@ export default function ConductoresPage() {
       {/* MODAL 2: RENOVAR LICENCIA (HU-CON-02) */}
       {showLicenciaModal && selectedConductor && (
         <div className="modal-backdrop">
-          <div className="modal-content" style={{ maxWidth: 480 }}>
+          <div className="modal-content" style={{ maxWidth: 500 }}>
             <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--c-dark)', marginBottom: '0.35rem' }}>
               Renovar Licencia de Conducir
             </h3>
@@ -745,18 +789,29 @@ export default function ConductoresPage() {
                 />
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75rem', marginBottom: '1.5rem' }}>
                 <div>
                   <label style={{ fontSize: '0.8rem', fontWeight: 600, display: 'block', marginBottom: '0.35rem' }}>Categoría</label>
                   <select
-                    value={licenciaForm.idCategoria}
-                    onChange={(e) => setLicenciaForm({ ...licenciaForm, idCategoria: parseInt(e.target.value, 10) })}
+                    value={licenciaForm.categoria}
+                    onChange={(e) => setLicenciaForm({ ...licenciaForm, categoria: e.target.value })}
                     style={{ width: '100%', padding: '0.6rem', fontSize: '0.875rem' }}
                   >
-                    <option value={1}>Cat. A</option>
-                    <option value={2}>Cat. B</option>
-                    <option value={3}>Cat. C</option>
+                    <option value="A">Cat. A (Liviano)</option>
+                    <option value="B">Cat. B (Mediano)</option>
+                    <option value="C">Cat. C (Pesado)</option>
+                    <option value="P">Cat. P (Particular)</option>
                   </select>
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.8rem', fontWeight: 600, display: 'block', marginBottom: '0.35rem' }}>Fecha Emisión</label>
+                  <input
+                    type="date"
+                    required
+                    value={licenciaForm.fechaEmision}
+                    onChange={(e) => setLicenciaForm({ ...licenciaForm, fechaEmision: e.target.value })}
+                    style={{ width: '100%', padding: '0.6rem', fontSize: '0.875rem' }}
+                  />
                 </div>
                 <div>
                   <label style={{ fontSize: '0.8rem', fontWeight: 600, display: 'block', marginBottom: '0.35rem' }}>Nuevo Vencimiento</label>

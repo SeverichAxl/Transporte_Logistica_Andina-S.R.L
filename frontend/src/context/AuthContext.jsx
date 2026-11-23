@@ -4,11 +4,51 @@ import axios from 'axios';
 const AuthContext = createContext(null);
 
 const DEFAULT_USERS = [
-  { id: 1, username: 'operador', email: 'operador@logistica.andina', nombre: 'Carlos Ramos', rol: 'OP', rolNombre: 'Operador Logístico' },
-  { id: 2, username: 'flota', email: 'flota@logistica.andina', nombre: 'Ana Mendoza', rol: 'AF', rolNombre: 'Administradora de Flota' },
-  { id: 3, username: 'despachador', email: 'despacho@logistica.andina', nombre: 'David Castro', rol: 'DE', rolNombre: 'Despachador Operativo' },
-  { id: 4, username: 'conductor', email: 'conductor@logistica.andina', nombre: 'Mario Huamán', rol: 'CO', rolNombre: 'Conductor Titular' },
-  { id: 5, username: 'gerente', email: 'gerencia@logistica.andina', nombre: 'Gabriela Paz', rol: 'GE', rolNombre: 'Gerente General' }
+  { 
+    id: 1, 
+    username: 'operador', 
+    email: 'operador@logistica.andina', 
+    nombre: 'Carlos Ramos', 
+    rol: 'OP', 
+    rolNombre: 'Operador Logístico',
+    modulosPermitidos: ['dashboard', 'envios', 'conductores', 'entregas']
+  },
+  { 
+    id: 2, 
+    username: 'flota', 
+    email: 'flota@logistica.andina', 
+    nombre: 'Ana Mendoza', 
+    rol: 'AF', 
+    rolNombre: 'Administradora de Flota',
+    modulosPermitidos: ['dashboard', 'flota']
+  },
+  { 
+    id: 3, 
+    username: 'despachador', 
+    email: 'despacho@logistica.andina', 
+    nombre: 'David Castro', 
+    rol: 'DE', 
+    rolNombre: 'Despachador Operativo',
+    modulosPermitidos: ['dashboard', 'envios', 'flota', 'conductores']
+  },
+  { 
+    id: 4, 
+    username: 'conductor', 
+    email: 'conductor@logistica.andina', 
+    nombre: 'Mario Huamán', 
+    rol: 'CO', 
+    rolNombre: 'Conductor Titular',
+    modulosPermitidos: ['entregas']
+  },
+  { 
+    id: 5, 
+    username: 'gerente', 
+    email: 'gerencia@logistica.andina', 
+    nombre: 'Gabriela Paz', 
+    rol: 'GE', 
+    rolNombre: 'Gerente General',
+    modulosPermitidos: ['dashboard', 'envios', 'flota', 'conductores', 'entregas']
+  }
 ];
 
 export function AuthProvider({ children }) {
@@ -29,10 +69,32 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     axios.get('http://localhost:3000/api/v1/auth/users', { timeout: 2000 })
       .then(res => {
-        if (res.data?.data) setAvailableUsers(res.data.data);
+        if (res.data?.data && Array.isArray(res.data.data)) {
+          setAvailableUsers(res.data.data);
+        }
       })
       .catch(() => {});
   }, []);
+
+  /**
+   * Verifica si el usuario actual tiene permiso para ver un módulo (SEG-03)
+   */
+  const hasPermission = (modulo) => {
+    if (!user) return false;
+    if (user.rol === 'GE') return true;
+    if (Array.isArray(user.modulosPermitidos)) {
+      return user.modulosPermitidos.includes(modulo);
+    }
+    // Mapeo por defecto según rol
+    const permisos = {
+      OP: ['dashboard', 'envios', 'conductores', 'entregas'],
+      AF: ['dashboard', 'flota'],
+      DE: ['dashboard', 'envios', 'flota', 'conductores'],
+      CO: ['entregas'],
+      GE: ['dashboard', 'envios', 'flota', 'conductores', 'entregas']
+    };
+    return (permisos[user.rol] || []).includes(modulo);
+  };
 
   /**
    * Inicio de sesión formal con credenciales
@@ -52,11 +114,11 @@ export function AuthProvider({ children }) {
       localStorage.setItem('tla_token', data.token);
       return data;
     } catch (err) {
-      // Si el gateway no está accesible, permitimos fallback local de demostración para los 5 usuarios
+      // Fallback local en caso de que el Gateway esté apagado
       const idLower = identifier.trim().toLowerCase();
-      const found = DEFAULT_USERS.find(u => u.username.toLowerCase() === idLower || u.email.toLowerCase() === idLower);
+      const found = availableUsers.find(u => u.username.toLowerCase() === idLower || u.email.toLowerCase() === idLower);
       if (found && password === 'Password123!') {
-        const fakeToken = `offline-jwt-${Date.now()}`;
+        const fakeToken = `dev-jwt-${Date.now()}`;
         setUser(found);
         setToken(fakeToken);
         localStorage.setItem('tla_user', JSON.stringify(found));
@@ -79,7 +141,7 @@ export function AuthProvider({ children }) {
   };
 
   /**
-   * Cierre de sesión
+   * Cierre de sesión (limpia almacenamiento y estado)
    */
   const logout = () => {
     setUser(null);
@@ -95,6 +157,7 @@ export function AuthProvider({ children }) {
       isAuthenticated: !!user && !!token,
       availableUsers,
       loading,
+      hasPermission,
       login,
       loginWithUser,
       logout

@@ -51,6 +51,14 @@ function validarCreacionConductor(body = {}) {
   _fechaValida('fechaNacimiento', body.fechaNacimiento, errores);
 
   const licencia = body.licencia || {};
+  const idToCat = { 1: 'A', 2: 'B', 3: 'C', 4: 'P' };
+  if (!licencia.categoria && licencia.idCategoria) {
+    licencia.categoria = idToCat[licencia.idCategoria] || String(licencia.idCategoria);
+  }
+  if (!licencia.fechaEmision && licencia.fechaVencimiento) {
+    licencia.fechaEmision = new Date().toISOString().split('T')[0];
+  }
+
   _requerido('licencia.nroLicencia', licencia.nroLicencia, errores, 'nroLicencia de la licencia');
   _requerido('licencia.categoria', licencia.categoria, errores, 'categoría de la licencia');
   _requerido('licencia.fechaEmision', licencia.fechaEmision, errores, 'fechaEmisión de la licencia');
@@ -134,6 +142,14 @@ function validarActualizacionConductor(body = {}) {
 function validarRenovacionLicencia(body = {}) {
   const errores = [];
 
+  const idToCat = { 1: 'A', 2: 'B', 3: 'C', 4: 'P' };
+  if (!body.categoria && body.idCategoria) {
+    body.categoria = idToCat[body.idCategoria] || String(body.idCategoria);
+  }
+  if (!body.fechaEmision && body.fechaVencimiento) {
+    body.fechaEmision = new Date().toISOString().split('T')[0];
+  }
+
   _requerido('nroLicencia', body.nroLicencia, errores);
   _requerido('categoria', body.categoria, errores);
   _requerido('fechaEmision', body.fechaEmision, errores);
@@ -169,6 +185,17 @@ function validarRenovacionLicencia(body = {}) {
  */
 function validarCreacionAsignacion(body = {}) {
   const errores = [];
+
+  // Soporte bidireccional de alias de campos para evitar discrepancias
+  if (!body.codigoSeguimiento && body.codigoEnvio) {
+    body.codigoSeguimiento = body.codigoEnvio;
+  }
+  if (!body.placa && body.placaVehiculo) {
+    body.placa = body.placaVehiculo;
+  }
+  if (!body.observacion && body.observaciones) {
+    body.observacion = body.observaciones;
+  }
 
   _requerido('codigoSeguimiento', body.codigoSeguimiento, errores);
   _requerido('placa', body.placa, errores);

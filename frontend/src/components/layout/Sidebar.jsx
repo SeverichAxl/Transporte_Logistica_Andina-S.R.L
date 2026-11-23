@@ -8,15 +8,21 @@ import {
   CheckCircle,
   ShieldCheck
 } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 export default function Sidebar() {
-  const navItems = [
-    { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/envios', label: 'Gestión de Envíos', icon: Package },
-    { to: '/flota', label: 'Gestión de Flota', icon: Truck },
-    { to: '/conductores', label: 'Conductores', icon: Users },
-    { to: '/entregas', label: 'Control de Entregas', icon: CheckCircle }
+  const { user, hasPermission } = useAuth();
+
+  const allNavItems = [
+    { to: '/', modulo: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { to: '/envios', modulo: 'envios', label: 'Gestión de Envíos', icon: Package },
+    { to: '/flota', modulo: 'flota', label: 'Gestión de Flota', icon: Truck },
+    { to: '/conductores', modulo: 'conductores', label: 'Conductores', icon: Users },
+    { to: '/entregas', modulo: 'entregas', label: 'Control de Entregas', icon: CheckCircle }
   ];
+
+  // Filtrado estricto por rol según SEG-03
+  const visibleNavItems = allNavItems.filter(item => hasPermission(item.modulo));
 
   return (
     <aside className="app-sidebar">
@@ -31,8 +37,10 @@ export default function Sidebar() {
       </div>
 
       <nav className="sidebar-nav">
-        <div className="nav-section-title">Módulos Operativos</div>
-        {navItems.map((item) => {
+        <div className="nav-section-title">
+          Módulos Autorizados ({user?.rol || 'N/A'})
+        </div>
+        {visibleNavItems.map((item) => {
           const Icon = item.icon;
           return (
             <NavLink
@@ -51,9 +59,11 @@ export default function Sidebar() {
       <div className="sidebar-footer">
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
           <ShieldCheck size={14} color="#43C59E" />
-          <span style={{ fontWeight: 600, color: '#FFFFFF' }}>Microservicios v1.0</span>
+          <span style={{ fontWeight: 600, color: '#FFFFFF' }}>Rol: {user?.rolNombre || user?.rol}</span>
         </div>
-        <div style={{ color: '#6A8EAE' }}>PostgreSQL 16 Multi-Esquema</div>
+        <div style={{ color: '#6A8EAE', fontSize: '0.7rem' }}>
+          {visibleNavItems.length} módulo(s) habilitado(s)
+        </div>
       </div>
     </aside>
   );

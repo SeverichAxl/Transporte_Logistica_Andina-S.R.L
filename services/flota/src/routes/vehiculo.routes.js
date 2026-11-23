@@ -4,9 +4,11 @@ const vehiculoController = require('../controllers/vehiculo.controller');
 
 // HU-FLO-01: Registrar vehículo
 router.post('/', vehiculoController.crear);
+router.post('/vehiculos', vehiculoController.crear);
 
 // HU-FLO-05 y FE-FLO-01: Listar vehículos con filtros y métricas
 router.get('/', vehiculoController.listar);
+router.get('/vehiculos', vehiculoController.listar);
 
 // Consulta por ID
 router.get('/id/:id', vehiculoController.obtenerPorId);
