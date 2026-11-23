@@ -29,6 +29,8 @@ app.use(requestLogger);
 
 // Servir archivos estáticos de uploads (evidencias y comprobantes)
 app.use('/uploads', express.static(uploadsDir));
+// También bajo el prefijo del gateway para que url_archivo funcione vía puerto 3000
+app.use('/api/v1/entregas/uploads', express.static(uploadsDir));
 
 app.use(healthRoutes);
 app.use('/api/v1/entregas', entregaRoutes);
