@@ -114,24 +114,38 @@ class EnvioService {
     return this.obtenerPorId(id);
   }
 
-  async cambiarEstado(id, { nuevoEstado, observacion, idOrigen = 1 }, usuario = 'operador') {
-    const envio = await envioRepository.findById(id);
+  async cambiarEstado(id, datos = {}, usuario = 'operador') {
+    const { nuevoEstado, estado, observacion, idOrigen: idOrigenParam, origenEvento } = datos;
+    const targetStateRaw = nuevoEstado || estado;
+
+    // Acepta id numérico o código de seguimiento TLA-...
+    const envio = isNaN(Number(id)) 
+      ? await envioRepository.findByCodigo(id)
+      : await envioRepository.findById(Number(id));
+
     if (!envio) {
-      throw ApiError.notFound(`Envío con ID ${id} no encontrado`);
+      throw ApiError.notFound(`Envío ${id} no encontrado`);
     }
 
-    if (!nuevoEstado) {
+    if (!targetStateRaw) {
       throw ApiError.badRequest('Debe indicar el nuevoEstado (código o ID)');
+    }
+
+    // Resolver idOrigen según origenEvento
+    let idOrigen = idOrigenParam || 1;
+    if (origenEvento) {
+      const origenes = { MANUAL: 1, ASIGNACION: 2, ENTREGA: 3, SISTEMA: 4 };
+      idOrigen = origenes[String(origenEvento).toUpperCase()] || 1;
     }
 
     // Resolver ID del nuevo estado
     let targetEstado;
-    if (typeof nuevoEstado === 'number' || !isNaN(parseInt(nuevoEstado, 10))) {
-      const idNum = parseInt(nuevoEstado, 10);
+    if (typeof targetStateRaw === 'number' || !isNaN(parseInt(targetStateRaw, 10))) {
+      const idNum = parseInt(targetStateRaw, 10);
       const codigos = { 1: 'REGISTRADO', 2: 'PENDIENTE', 3: 'EN_TRANSITO', 4: 'ENTREGADO', 5: 'CANCELADO' };
       targetEstado = { id_estado: idNum, codigo: codigos[idNum] };
     } else {
-      targetEstado = await envioRepository.getEstadoByCodigo(nuevoEstado);
+      targetEstado = await envioRepository.getEstadoByCodigo(targetStateRaw);
     }
 
     if (!targetEstado) {
@@ -152,7 +166,7 @@ class EnvioService {
       throw ApiError.badRequest('Para cancelar un envío es obligatorio indicar el motivo en la observación.');
     }
 
-    await envioRepository.updateEstado(id, {
+    await envioRepository.updateEstado(envio.id_envio, {
       idEstadoAnterior: envio.id_estado,
       idEstadoNuevo: targetEstado.id_estado,
       usuario,
@@ -160,7 +174,7 @@ class EnvioService {
       idOrigen
     });
 
-    return this.obtenerPorId(id);
+    return this.obtenerPorId(envio.id_envio);
   }
 }
 

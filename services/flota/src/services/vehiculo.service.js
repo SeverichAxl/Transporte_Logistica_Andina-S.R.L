@@ -90,7 +90,10 @@ class VehiculoService {
     return this.obtenerPorId(id);
   }
 
-  async cambiarEstado(id, { nuevoEstado, motivo }, usuario = 'flota') {
+  async cambiarEstado(id, datos = {}, usuario = 'flota') {
+    const { nuevoEstado, estado, motivo } = datos;
+    const targetStateRaw = nuevoEstado || estado;
+
     const vehiculo = await vehiculoRepository.findById(id);
     if (!vehiculo) {
       throw ApiError.notFound(`Vehículo con ID ${id} no encontrado`);
@@ -100,25 +103,25 @@ class VehiculoService {
       throw ApiError.badRequest('El motivo del cambio de estado operativo es obligatorio (HU-FLO-04)');
     }
 
-    if (!nuevoEstado) {
+    if (!targetStateRaw) {
       throw ApiError.badRequest('Debe indicar el nuevoEstado');
     }
 
     let targetEstado;
-    if (typeof nuevoEstado === 'number' || !isNaN(parseInt(nuevoEstado, 10))) {
-      const idNum = parseInt(nuevoEstado, 10);
+    if (typeof targetStateRaw === 'number' || !isNaN(parseInt(targetStateRaw, 10))) {
+      const idNum = parseInt(targetStateRaw, 10);
       const codigos = { 1: 'DISPONIBLE', 2: 'EN_RUTA', 3: 'MANTENIMIENTO', 4: 'FUERA_SERVICIO' };
       targetEstado = { id_estado: idNum, codigo: codigos[idNum] };
     } else {
-      targetEstado = await vehiculoRepository.getEstadoByCodigo(nuevoEstado);
+      targetEstado = await vehiculoRepository.getEstadoByCodigo(targetStateRaw);
     }
 
     if (!targetEstado) {
-      throw ApiError.badRequest(`Estado '${nuevoEstado}' no válido`);
+      throw ApiError.badRequest(`Estado '${targetStateRaw}' no válido`);
     }
 
     if (vehiculo.id_estado === targetEstado.id_estado) {
-      throw ApiError.badRequest(`El vehículo ya se encuentra en estado ${targetEstado.codigo}`);
+      return this.obtenerPorId(id); // Idempotente si ya está en ese estado
     }
 
     await vehiculoRepository.updateEstado(id, {
