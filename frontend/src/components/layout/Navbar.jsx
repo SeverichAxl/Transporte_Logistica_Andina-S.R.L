@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Activity, ShieldCheck, RefreshCw, ChevronDown, User } from 'lucide-react';
+import { Activity, ShieldCheck, RefreshCw, ChevronDown, User, LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 
 export default function Navbar() {
   const [gatewayStatus, setGatewayStatus] = useState('checking');
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const { user, availableUsers, loginWithUser } = useAuth();
+  const { user, availableUsers, loginWithUser, logout } = useAuth();
+  const navigate = useNavigate();
 
   const checkStatus = async () => {
     try {
@@ -22,6 +24,11 @@ export default function Navbar() {
     const interval = setInterval(checkStatus, 15000);
     return () => clearInterval(interval);
   }, []);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
     <header className="app-navbar">
@@ -57,7 +64,7 @@ export default function Navbar() {
         </button>
       </div>
 
-      {/* Selector de Usuario Activo (5 Roles) */}
+      {/* Selector de Usuario Activo (5 Roles) y Logout */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', position: 'relative' }}>
         <div style={{ position: 'relative' }}>
           <button
@@ -87,7 +94,7 @@ export default function Navbar() {
               fontSize: '0.75rem',
               letterSpacing: '0.04em'
             }}>
-              {user?.rol || 'OP'}
+              {user?.rol || 'US'}
             </div>
             <div style={{ textAlign: 'left' }}>
               <div style={{ fontWeight: 600, color: '#0A0908', fontSize: '0.85rem', lineHeight: 1.2 }}>
@@ -123,7 +130,7 @@ export default function Navbar() {
                 textTransform: 'uppercase',
                 borderBottom: '1px solid #f0f4f8' 
               }}>
-                Seleccionar Usuario (5 Roles)
+                Cambiar Rol Activo (5 Roles)
               </div>
               {availableUsers.map(u => (
                 <button
@@ -162,6 +169,29 @@ export default function Navbar() {
                   </div>
                 </button>
               ))}
+
+              <div style={{ borderTop: '1px solid #f0f4f8', marginTop: '0.35rem', paddingTop: '0.35rem' }}>
+                <button
+                  onClick={handleLogout}
+                  style={{
+                    width: '100%',
+                    padding: '0.6rem 0.85rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.65rem',
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    textAlign: 'left',
+                    cursor: 'pointer',
+                    fontSize: '0.825rem',
+                    color: 'var(--c-danger)',
+                    fontWeight: 600
+                  }}
+                >
+                  <LogOut size={15} />
+                  <span>Cerrar Sesión</span>
+                </button>
+              </div>
             </div>
           )}
         </div>

@@ -429,6 +429,12 @@ table tbody tr:hover {
 }
 
 /* Responsive */
+@media (max-width: 900px) {
+  .login-hero-panel {
+    display: none !important;
+  }
+}
+
 @media (max-width: 768px) {
   .app-layout {
     flex-direction: column;
